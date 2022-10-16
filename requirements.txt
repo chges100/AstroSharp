@@ -1,0 +1,9 @@
+appdirs
+astropy
+hdpitkinter
+Pillow
+pykrige
+scikit-image
+scipy
+screeninfo
+xisf
