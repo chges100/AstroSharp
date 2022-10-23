@@ -68,11 +68,13 @@ class Application(tk.Frame):
 
         self.images = {
             "Original": None,
-            "Processed": None
+            "Processed": None,
+            "Scale": None
             }
 
-        self.layered_image = None
-        self.num_layers = 2
+        self.multiscale_img = None
+        self.num_scales = 3
+        self.selected_scale_to_show = 1
         
         self.my_title = "AstroSharp"
         self.master.title(self.my_title)
@@ -83,6 +85,8 @@ class Application(tk.Frame):
         self.create_widget()
         self.sharp_menu.show.set(1)
         self.sharp_menu.toggle()
+
+        self.scale_img_to_show = AstroImage(self.stretch_option_current, self.saturation)
 
         self.reset_transform()
         
@@ -111,7 +115,7 @@ class Application(tk.Frame):
         self.canvas.pack(side=tk.RIGHT, expand=True, fill=tk.BOTH)
         
         
-        self.display_options = ["Original","Processed"]
+        self.display_options = ["Original","Processed","Scale"]
         self.display_type = tk.StringVar()
         self.display_type.set(self.display_options[0])
         self.display_menu = ttk.OptionMenu(self.canvas, self.display_type, self.display_type.get(), *self.display_options, command=self.switch_display)
@@ -252,29 +256,533 @@ class Application(tk.Frame):
         text.image = num_pic
         text.grid(column=0, row=8, pady=5*scal, padx=0, sticky="w")
 
+
+        #---Scale 1 menu---
+
         self.scale1_menu = CollapsibleFrame(self.sharp_menu.sub_frame, text=_("Scale 1") + " ")
         self.scale1_menu.grid(column=0, row=9, pady=(5*scal,20*scal), padx=15*scal, sticky="news")
         self.scale1_menu.sub_frame.grid_columnconfigure(0, weight=1)
+
+        for i in range(7):
+            self.scale1_menu.sub_frame.grid_rowconfigure(i, weight=1)
+
+        self.scale1_detail = tk.DoubleVar()
+        self.scale1_detail.set(1.0)
+
+        self.scale1_detail_text = tk.Message(self.scale1_menu.sub_frame, text=_("Detail Enhancement") + ": {:.1f}".format(self.scale1_detail.get()))
+        self.scale1_detail_text.config(width=500 * scal)
+        self.scale1_detail_text.grid(column=0, row=0, pady=(5*scal,5*scal), padx=15*scal, sticky="ews")
+        
+        def on_scale1_detail_slider(scale_detail):
+            self.scale1_detail.set(scale_detail)
+            self.scale1_detail_text.configure(text=_("Detail Enhancement") + ": {:.1f}".format(self.scale1_detail.get()))
+                
+
+        self.scale1_detail_slider = ttk.Scale(
+            self.scale1_menu.sub_frame,
+            orient=tk.HORIZONTAL,
+            from_=1.0,
+            to=4.0,
+            var=self.scale1_detail,
+            command=on_scale1_detail_slider,
+            length=130
+            )
+        
+        self.scale1_detail_slider.grid(column=0, row=1, pady=(0,30*scal), padx=15*scal, sticky="ew")
+
+        self.scale1_denoise_thr = tk.DoubleVar()
+        self.scale1_denoise_thr.set(1.0)
+
+        self.scale1_denoise_thr_text = tk.Message(self.scale1_menu.sub_frame, text=_("Denoise detail threshold") + ": {:.1f}".format(self.scale1_denoise_thr.get()))
+        self.scale1_denoise_thr_text.config(width=500 * scal)
+        self.scale1_denoise_thr_text.grid(column=0, row=2, pady=(5*scal,5*scal), padx=15*scal, sticky="ews")
+        
+        def on_scale1_denoise_thr_slider(denoise_thr):
+            self.scale1_denoise_thr.set(denoise_thr)
+            self.scale1_denoise_thr_text.configure(text=_("Denoise detail threshold") + ": {:.1f}".format(self.scale1_denoise_thr.get()))
+                
+
+        self.scale1_denoise_thr_slider = ttk.Scale(
+            self.scale1_menu.sub_frame,
+            orient=tk.HORIZONTAL,
+            from_=0.0,
+            to=5.0,
+            var=self.scale1_denoise_thr,
+            command=on_scale1_denoise_thr_slider,
+            length=130
+            )
+        
+        self.scale1_denoise_thr_slider.grid(column=0, row=3, pady=(0,30*scal), padx=15*scal, sticky="ew")
+
+        self.scale1_denoise_amount = tk.DoubleVar()
+        self.scale1_denoise_amount.set(1.0)
+
+        self.scale1_denoise_amount_text = tk.Message(self.scale1_menu.sub_frame, text=_("Denoise amount") + ": {:.1f}".format(self.scale1_denoise_amount.get()))
+        self.scale1_denoise_amount_text.config(width=500 * scal)
+        self.scale1_denoise_amount_text.grid(column=0, row=4, pady=(5*scal,5*scal), padx=15*scal, sticky="ews")
+        
+        def on_scale1_denoise_amount_slider(denoise_amount):
+            self.scale1_denoise_amount.set(denoise_amount)
+            self.scale1_denoise_amount_text.configure(text=_("Denoise amount") + ": {:.1f}".format(self.scale1_denoise_amount.get()))
+                
+
+        self.scale1_denoise_amount_slider = ttk.Scale(
+            self.scale1_menu.sub_frame,
+            orient=tk.HORIZONTAL,
+            from_=0.0,
+            to=1.0,
+            var=self.scale1_denoise_amount,
+            command=on_scale1_denoise_amount_slider,
+            length=130
+            )
+        
+        self.scale1_denoise_amount_slider.grid(column=0, row=5, pady=(0,30*scal), padx=15*scal, sticky="ew")
+
+        self.scale1_show_button = ttk.Button(self.scale1_menu.sub_frame, 
+                         text=_("Show Scale"),
+                         command=self.show_scale1)
+        self.scale1_show_button.grid(column=0, row=16, pady=(5*scal,30*scal), padx=15*scal, sticky="news")
+        tt_show_scale1 = tooltip.Tooltip(self.scale1_show_button, text=tooltip.calculate_text)
+
+
+        #---Scale 2 menu---
 
         self.scale2_menu = CollapsibleFrame(self.sharp_menu.sub_frame, text=_("Scale 2") + " ")
         self.scale2_menu.grid(column=0, row=10, pady=(5*scal,20*scal), padx=15*scal, sticky="news")
         self.scale2_menu.sub_frame.grid_columnconfigure(0, weight=1)
 
+        for i in range(7):
+            self.scale2_menu.sub_frame.grid_rowconfigure(i, weight=1)
+
+        self.scale2_detail = tk.DoubleVar()
+        self.scale2_detail.set(1.0)
+
+        self.scale2_detail_text = tk.Message(self.scale2_menu.sub_frame, text=_("Detail Enhancement") + ": {:.1f}".format(self.scale2_detail.get()))
+        self.scale2_detail_text.config(width=500 * scal)
+        self.scale2_detail_text.grid(column=0, row=0, pady=(5*scal,5*scal), padx=15*scal, sticky="ews")
+        
+        def on_scale2_detail_slider(scale_detail):
+            self.scale2_detail.set(scale_detail)
+            self.scale2_detail_text.configure(text=_("Detail Enhancement") + ": {:.1f}".format(self.scale2_detail.get()))
+                
+
+        self.scale2_detail_slider = ttk.Scale(
+            self.scale2_menu.sub_frame,
+            orient=tk.HORIZONTAL,
+            from_=1.0,
+            to=4.0,
+            var=self.scale2_detail,
+            command=on_scale2_detail_slider,
+            length=130
+            )
+        
+        self.scale2_detail_slider.grid(column=0, row=1, pady=(0,30*scal), padx=15*scal, sticky="ew")
+
+        self.scale2_denoise_thr = tk.DoubleVar()
+        self.scale2_denoise_thr.set(1.0)
+
+        self.scale2_denoise_thr_text = tk.Message(self.scale2_menu.sub_frame, text=_("Denoise detail threshold") + ": {:.1f}".format(self.scale2_denoise_thr.get()))
+        self.scale2_denoise_thr_text.config(width=500 * scal)
+        self.scale2_denoise_thr_text.grid(column=0, row=2, pady=(5*scal,5*scal), padx=15*scal, sticky="ews")
+        
+        def on_scale2_denoise_thr_slider(denoise_thr):
+            self.scale2_denoise_thr.set(denoise_thr)
+            self.scale2_denoise_thr_text.configure(text=_("Denoise detail threshold") + ": {:.1f}".format(self.scale2_denoise_thr.get()))
+                
+
+        self.scale2_denoise_thr_slider = ttk.Scale(
+            self.scale2_menu.sub_frame,
+            orient=tk.HORIZONTAL,
+            from_=0.0,
+            to=5.0,
+            var=self.scale2_denoise_thr,
+            command=on_scale2_denoise_thr_slider,
+            length=130
+            )
+        
+        self.scale2_denoise_thr_slider.grid(column=0, row=3, pady=(0,30*scal), padx=15*scal, sticky="ew")
+
+        self.scale2_denoise_amount = tk.DoubleVar()
+        self.scale2_denoise_amount.set(1.0)
+
+        self.scale2_denoise_amount_text = tk.Message(self.scale2_menu.sub_frame, text=_("Denoise amount") + ": {:.1f}".format(self.scale2_denoise_amount.get()))
+        self.scale2_denoise_amount_text.config(width=500 * scal)
+        self.scale2_denoise_amount_text.grid(column=0, row=4, pady=(5*scal,5*scal), padx=15*scal, sticky="ews")
+        
+        def on_scale2_denoise_amount_slider(denoise_amount):
+            self.scale2_denoise_amount.set(denoise_amount)
+            self.scale2_denoise_amount_text.configure(text=_("Denoise amount") + ": {:.1f}".format(self.scale2_denoise_amount.get()))
+                
+
+        self.scale2_denoise_amount_slider = ttk.Scale(
+            self.scale2_menu.sub_frame,
+            orient=tk.HORIZONTAL,
+            from_=0.0,
+            to=1.0,
+            var=self.scale2_denoise_amount,
+            command=on_scale2_denoise_amount_slider,
+            length=130
+            )
+        
+        self.scale2_denoise_amount_slider.grid(column=0, row=5, pady=(0,30*scal), padx=15*scal, sticky="ew")
+
+        self.scale2_show_button = ttk.Button(self.scale2_menu.sub_frame, 
+                         text=_("Show Scale"),
+                         command=self.show_scale2)
+        self.scale2_show_button.grid(column=0, row=16, pady=(5*scal,30*scal), padx=15*scal, sticky="news")
+        tt_show_scale2 = tooltip.Tooltip(self.scale2_show_button, text=tooltip.calculate_text)
+
+
+        #---Scale 3 menu---
+
         self.scale3_menu = CollapsibleFrame(self.sharp_menu.sub_frame, text=_("Scale 3") + " ")
         self.scale3_menu.grid(column=0, row=11, pady=(5*scal,20*scal), padx=15*scal, sticky="news")
         self.scale3_menu.sub_frame.grid_columnconfigure(0, weight=1)
+
+        for i in range(7):
+            self.scale3_menu.sub_frame.grid_rowconfigure(i, weight=1)
+
+        self.scale3_detail = tk.DoubleVar()
+        self.scale3_detail.set(1.0)
+
+        self.scale3_detail_text = tk.Message(self.scale3_menu.sub_frame, text=_("Detail Enhancement") + ": {:.1f}".format(self.scale3_detail.get()))
+        self.scale3_detail_text.config(width=500 * scal)
+        self.scale3_detail_text.grid(column=0, row=0, pady=(5*scal,5*scal), padx=15*scal, sticky="ews")
+        
+        def on_scale3_detail_slider(scale_detail):
+            self.scale3_detail.set(scale_detail)
+            self.scale3_detail_text.configure(text=_("Detail Enhancement") + ": {:.1f}".format(self.scale3_detail.get()))
+                
+
+        self.scale3_detail_slider = ttk.Scale(
+            self.scale3_menu.sub_frame,
+            orient=tk.HORIZONTAL,
+            from_=1.0,
+            to=4.0,
+            var=self.scale3_detail,
+            command=on_scale3_detail_slider,
+            length=130
+            )
+        
+        self.scale3_detail_slider.grid(column=0, row=1, pady=(0,30*scal), padx=15*scal, sticky="ew")
+
+        self.scale3_denoise_thr = tk.DoubleVar()
+        self.scale3_denoise_thr.set(1.0)
+
+        self.scale3_denoise_thr_text = tk.Message(self.scale3_menu.sub_frame, text=_("Denoise detail threshold") + ": {:.1f}".format(self.scale3_denoise_thr.get()))
+        self.scale3_denoise_thr_text.config(width=500 * scal)
+        self.scale3_denoise_thr_text.grid(column=0, row=2, pady=(5*scal,5*scal), padx=15*scal, sticky="ews")
+        
+        def on_scale3_denoise_thr_slider(denoise_thr):
+            self.scale3_denoise_thr.set(denoise_thr)
+            self.scale3_denoise_thr_text.configure(text=_("Denoise detail threshold") + ": {:.1f}".format(self.scale3_denoise_thr.get()))
+                
+
+        self.scale3_denoise_thr_slider = ttk.Scale(
+            self.scale3_menu.sub_frame,
+            orient=tk.HORIZONTAL,
+            from_=0.0,
+            to=5.0,
+            var=self.scale3_denoise_thr,
+            command=on_scale3_denoise_thr_slider,
+            length=130
+            )
+        
+        self.scale3_denoise_thr_slider.grid(column=0, row=3, pady=(0,30*scal), padx=15*scal, sticky="ew")
+
+        self.scale3_denoise_amount = tk.DoubleVar()
+        self.scale3_denoise_amount.set(1.0)
+
+        self.scale3_denoise_amount_text = tk.Message(self.scale3_menu.sub_frame, text=_("Denoise amount") + ": {:.1f}".format(self.scale3_denoise_amount.get()))
+        self.scale3_denoise_amount_text.config(width=500 * scal)
+        self.scale3_denoise_amount_text.grid(column=0, row=4, pady=(5*scal,5*scal), padx=15*scal, sticky="ews")
+        
+        def on_scale3_denoise_amount_slider(denoise_amount):
+            self.scale3_denoise_amount.set(denoise_amount)
+            self.scale3_denoise_amount_text.configure(text=_("Denoise amount") + ": {:.1f}".format(self.scale3_denoise_amount.get()))
+                
+
+        self.scale3_denoise_amount_slider = ttk.Scale(
+            self.scale3_menu.sub_frame,
+            orient=tk.HORIZONTAL,
+            from_=0.0,
+            to=1.0,
+            var=self.scale3_denoise_amount,
+            command=on_scale3_denoise_amount_slider,
+            length=130
+            )
+        
+        self.scale3_denoise_amount_slider.grid(column=0, row=5, pady=(0,30*scal), padx=15*scal, sticky="ew")
+
+        self.scale3_show_button = ttk.Button(self.scale3_menu.sub_frame, 
+                         text=_("Show Scale"),
+                         command=self.show_scale3)
+        self.scale3_show_button.grid(column=0, row=16, pady=(5*scal,30*scal), padx=15*scal, sticky="news")
+        tt_show_scale3 = tooltip.Tooltip(self.scale3_show_button, text=tooltip.calculate_text)
+
+
+        #---Scale 4 menu---
 
         self.scale4_menu = CollapsibleFrame(self.sharp_menu.sub_frame, text=_("Scale 4") + " ")
         self.scale4_menu.grid(column=0, row=12, pady=(5*scal,20*scal), padx=15*scal, sticky="news")
         self.scale4_menu.sub_frame.grid_columnconfigure(0, weight=1)
 
+        for i in range(7):
+            self.scale4_menu.sub_frame.grid_rowconfigure(i, weight=1)
+
+        self.scale4_detail = tk.DoubleVar()
+        self.scale4_detail.set(1.0)
+
+        self.scale4_detail_text = tk.Message(self.scale4_menu.sub_frame, text=_("Detail Enhancement") + ": {:.1f}".format(self.scale4_detail.get()))
+        self.scale4_detail_text.config(width=500 * scal)
+        self.scale4_detail_text.grid(column=0, row=0, pady=(5*scal,5*scal), padx=15*scal, sticky="ews")
+        
+        def on_scale4_detail_slider(scale_detail):
+            self.scale4_detail.set(scale_detail)
+            self.scale4_detail_text.configure(text=_("Detail Enhancement") + ": {:.1f}".format(self.scale4_detail.get()))
+                
+
+        self.scale4_detail_slider = ttk.Scale(
+            self.scale4_menu.sub_frame,
+            orient=tk.HORIZONTAL,
+            from_=1.0,
+            to=4.0,
+            var=self.scale4_detail,
+            command=on_scale4_detail_slider,
+            length=130
+            )
+        
+        self.scale4_detail_slider.grid(column=0, row=1, pady=(0,30*scal), padx=15*scal, sticky="ew")
+
+        self.scale4_denoise_thr = tk.DoubleVar()
+        self.scale4_denoise_thr.set(1.0)
+
+        self.scale4_denoise_thr_text = tk.Message(self.scale4_menu.sub_frame, text=_("Denoise detail threshold") + ": {:.1f}".format(self.scale4_denoise_thr.get()))
+        self.scale4_denoise_thr_text.config(width=500 * scal)
+        self.scale4_denoise_thr_text.grid(column=0, row=2, pady=(5*scal,5*scal), padx=15*scal, sticky="ews")
+        
+        def on_scale4_denoise_thr_slider(denoise_thr):
+            self.scale4_denoise_thr.set(denoise_thr)
+            self.scale4_denoise_thr_text.configure(text=_("Denoise detail threshold") + ": {:.1f}".format(self.scale4_denoise_thr.get()))
+                
+
+        self.scale4_denoise_thr_slider = ttk.Scale(
+            self.scale4_menu.sub_frame,
+            orient=tk.HORIZONTAL,
+            from_=0.0,
+            to=5.0,
+            var=self.scale4_denoise_thr,
+            command=on_scale4_denoise_thr_slider,
+            length=130
+            )
+        
+        self.scale4_denoise_thr_slider.grid(column=0, row=3, pady=(0,30*scal), padx=15*scal, sticky="ew")
+
+        self.scale4_denoise_amount = tk.DoubleVar()
+        self.scale4_denoise_amount.set(1.0)
+
+        self.scale4_denoise_amount_text = tk.Message(self.scale4_menu.sub_frame, text=_("Denoise amount") + ": {:.1f}".format(self.scale4_denoise_amount.get()))
+        self.scale4_denoise_amount_text.config(width=500 * scal)
+        self.scale4_denoise_amount_text.grid(column=0, row=4, pady=(5*scal,5*scal), padx=15*scal, sticky="ews")
+        
+        def on_scale4_denoise_amount_slider(denoise_amount):
+            self.scale4_denoise_amount.set(denoise_amount)
+            self.scale4_denoise_amount_text.configure(text=_("Denoise amount") + ": {:.1f}".format(self.scale4_denoise_amount.get()))
+                
+
+        self.scale4_denoise_amount_slider = ttk.Scale(
+            self.scale4_menu.sub_frame,
+            orient=tk.HORIZONTAL,
+            from_=0.0,
+            to=1.0,
+            var=self.scale4_denoise_amount,
+            command=on_scale4_denoise_amount_slider,
+            length=130
+            )
+        
+        self.scale4_denoise_amount_slider.grid(column=0, row=5, pady=(0,30*scal), padx=15*scal, sticky="ew")
+
+        self.scale4_show_button = ttk.Button(self.scale4_menu.sub_frame, 
+                         text=_("Show Scale"),
+                         command=self.show_scale4)
+        self.scale4_show_button.grid(column=0, row=16, pady=(5*scal,30*scal), padx=15*scal, sticky="news")
+        tt_show_scale4 = tooltip.Tooltip(self.scale4_show_button, text=tooltip.calculate_text)
+
+
+        #---Scale 5 menu---
+
         self.scale5_menu = CollapsibleFrame(self.sharp_menu.sub_frame, text=_("Scale 5") + " ")
         self.scale5_menu.grid(column=0, row=13, pady=(5*scal,20*scal), padx=15*scal, sticky="news")
         self.scale5_menu.sub_frame.grid_columnconfigure(0, weight=1)
 
+        for i in range(7):
+            self.scale5_menu.sub_frame.grid_rowconfigure(i, weight=1)
+
+        self.scale5_detail = tk.DoubleVar()
+        self.scale5_detail.set(1.0)
+
+        self.scale5_detail_text = tk.Message(self.scale5_menu.sub_frame, text=_("Detail Enhancement") + ": {:.1f}".format(self.scale5_detail.get()))
+        self.scale5_detail_text.config(width=500 * scal)
+        self.scale5_detail_text.grid(column=0, row=0, pady=(5*scal,5*scal), padx=15*scal, sticky="ews")
+        
+        def on_scale5_detail_slider(scale_detail):
+            self.scale5_detail.set(scale_detail)
+            self.scale5_detail_text.configure(text=_("Detail Enhancement") + ": {:.1f}".format(self.scale5_detail.get()))
+                
+
+        self.scale5_detail_slider = ttk.Scale(
+            self.scale5_menu.sub_frame,
+            orient=tk.HORIZONTAL,
+            from_=1.0,
+            to=4.0,
+            var=self.scale5_detail,
+            command=on_scale5_detail_slider,
+            length=130
+            )
+        
+        self.scale5_detail_slider.grid(column=0, row=1, pady=(0,30*scal), padx=15*scal, sticky="ew")
+
+        self.scale5_denoise_thr = tk.DoubleVar()
+        self.scale5_denoise_thr.set(1.0)
+
+        self.scale5_denoise_thr_text = tk.Message(self.scale5_menu.sub_frame, text=_("Denoise detail threshold") + ": {:.1f}".format(self.scale5_denoise_thr.get()))
+        self.scale5_denoise_thr_text.config(width=500 * scal)
+        self.scale5_denoise_thr_text.grid(column=0, row=2, pady=(5*scal,5*scal), padx=15*scal, sticky="ews")
+        
+        def on_scale5_denoise_thr_slider(denoise_thr):
+            self.scale5_denoise_thr.set(denoise_thr)
+            self.scale5_denoise_thr_text.configure(text=_("Denoise detail threshold") + ": {:.1f}".format(self.scale5_denoise_thr.get()))
+                
+
+        self.scale5_denoise_thr_slider = ttk.Scale(
+            self.scale5_menu.sub_frame,
+            orient=tk.HORIZONTAL,
+            from_=0.0,
+            to=5.0,
+            var=self.scale5_denoise_thr,
+            command=on_scale5_denoise_thr_slider,
+            length=130
+            )
+        
+        self.scale5_denoise_thr_slider.grid(column=0, row=3, pady=(0,30*scal), padx=15*scal, sticky="ew")
+
+        self.scale5_denoise_amount = tk.DoubleVar()
+        self.scale5_denoise_amount.set(1.0)
+
+        self.scale5_denoise_amount_text = tk.Message(self.scale5_menu.sub_frame, text=_("Denoise amount") + ": {:.1f}".format(self.scale5_denoise_amount.get()))
+        self.scale5_denoise_amount_text.config(width=500 * scal)
+        self.scale5_denoise_amount_text.grid(column=0, row=4, pady=(5*scal,5*scal), padx=15*scal, sticky="ews")
+        
+        def on_scale5_denoise_amount_slider(denoise_amount):
+            self.scale5_denoise_amount.set(denoise_amount)
+            self.scale5_denoise_amount_text.configure(text=_("Denoise amount") + ": {:.1f}".format(self.scale5_denoise_amount.get()))
+                
+
+        self.scale5_denoise_amount_slider = ttk.Scale(
+            self.scale5_menu.sub_frame,
+            orient=tk.HORIZONTAL,
+            from_=0.0,
+            to=1.0,
+            var=self.scale5_denoise_amount,
+            command=on_scale5_denoise_amount_slider,
+            length=130
+            )
+        
+        self.scale5_denoise_amount_slider.grid(column=0, row=5, pady=(0,30*scal), padx=15*scal, sticky="ew")
+
+        self.scale5_show_button = ttk.Button(self.scale5_menu.sub_frame, 
+                         text=_("Show Scale"),
+                         command=self.show_scale5)
+        self.scale5_show_button.grid(column=0, row=16, pady=(5*scal,30*scal), padx=15*scal, sticky="news")
+        tt_show_scale5 = tooltip.Tooltip(self.scale5_show_button, text=tooltip.calculate_text)
+
+
+        #---Scale 6 menu---
+
         self.scale6_menu = CollapsibleFrame(self.sharp_menu.sub_frame, text=_("Scale 6") + " ")
         self.scale6_menu.grid(column=0, row=14, pady=(5*scal,20*scal), padx=15*scal, sticky="news")
         self.scale6_menu.sub_frame.grid_columnconfigure(0, weight=1)
+
+        for i in range(7):
+            self.scale6_menu.sub_frame.grid_rowconfigure(i, weight=1)
+
+        self.scale6_detail = tk.DoubleVar()
+        self.scale6_detail.set(1.0)
+
+        self.scale6_detail_text = tk.Message(self.scale6_menu.sub_frame, text=_("Detail Enhancement") + ": {:.1f}".format(self.scale6_detail.get()))
+        self.scale6_detail_text.config(width=500 * scal)
+        self.scale6_detail_text.grid(column=0, row=0, pady=(5*scal,5*scal), padx=15*scal, sticky="ews")
+        
+        def on_scale6_detail_slider(scale_detail):
+            self.scale6_detail.set(scale_detail)
+            self.scale6_detail_text.configure(text=_("Detail Enhancement") + ": {:.1f}".format(self.scale6_detail.get()))
+                
+
+        self.scale6_detail_slider = ttk.Scale(
+            self.scale6_menu.sub_frame,
+            orient=tk.HORIZONTAL,
+            from_=1.0,
+            to=4.0,
+            var=self.scale6_detail,
+            command=on_scale6_detail_slider,
+            length=130
+            )
+        
+        self.scale6_detail_slider.grid(column=0, row=1, pady=(0,30*scal), padx=15*scal, sticky="ew")
+
+        self.scale6_denoise_thr = tk.DoubleVar()
+        self.scale6_denoise_thr.set(1.0)
+
+        self.scale6_denoise_thr_text = tk.Message(self.scale6_menu.sub_frame, text=_("Denoise detail threshold") + ": {:.1f}".format(self.scale6_denoise_thr.get()))
+        self.scale6_denoise_thr_text.config(width=500 * scal)
+        self.scale6_denoise_thr_text.grid(column=0, row=2, pady=(5*scal,5*scal), padx=15*scal, sticky="ews")
+        
+        def on_scale6_denoise_thr_slider(denoise_thr):
+            self.scale6_denoise_thr.set(denoise_thr)
+            self.scale6_denoise_thr_text.configure(text=_("Denoise detail threshold") + ": {:.1f}".format(self.scale6_denoise_thr.get()))
+                
+
+        self.scale6_denoise_thr_slider = ttk.Scale(
+            self.scale6_menu.sub_frame,
+            orient=tk.HORIZONTAL,
+            from_=0.0,
+            to=5.0,
+            var=self.scale6_denoise_thr,
+            command=on_scale6_denoise_thr_slider,
+            length=130
+            )
+        
+        self.scale6_denoise_thr_slider.grid(column=0, row=3, pady=(0,30*scal), padx=15*scal, sticky="ew")
+
+        self.scale6_denoise_amount = tk.DoubleVar()
+        self.scale6_denoise_amount.set(1.0)
+
+        self.scale6_denoise_amount_text = tk.Message(self.scale6_menu.sub_frame, text=_("Denoise amount") + ": {:.1f}".format(self.scale6_denoise_amount.get()))
+        self.scale6_denoise_amount_text.config(width=500 * scal)
+        self.scale6_denoise_amount_text.grid(column=0, row=4, pady=(5*scal,5*scal), padx=15*scal, sticky="ews")
+        
+        def on_scale6_denoise_amount_slider(denoise_amount):
+            self.scale6_denoise_amount.set(denoise_amount)
+            self.scale6_denoise_amount_text.configure(text=_("Denoise amount") + ": {:.1f}".format(self.scale6_denoise_amount.get()))
+                
+
+        self.scale6_denoise_amount_slider = ttk.Scale(
+            self.scale6_menu.sub_frame,
+            orient=tk.HORIZONTAL,
+            from_=0.0,
+            to=1.0,
+            var=self.scale6_denoise_amount,
+            command=on_scale6_denoise_amount_slider,
+            length=130
+            )
+        
+        self.scale6_denoise_amount_slider.grid(column=0, row=5, pady=(0,30*scal), padx=15*scal, sticky="ew")
+
+        self.scale6_show_button = ttk.Button(self.scale6_menu.sub_frame, 
+                         text=_("Show Scale"),
+                         command=self.show_scale6)
+        self.scale6_show_button.grid(column=0, row=16, pady=(5*scal,30*scal), padx=15*scal, sticky="news")
+        tt_show_scale6 = tooltip.Tooltip(self.scale6_show_button, text=tooltip.calculate_text)
         
         
         
@@ -356,6 +864,7 @@ class Application(tk.Frame):
         
         self.display_type.set("Original")
         self.images["Processed"] = None
+        self.images["Scale"] = None
         
         self.master.title(self.my_title + " - " + os.path.basename(filename))
         self.filename = os.path.splitext(os.path.basename(filename))[0]
@@ -419,9 +928,12 @@ class Application(tk.Frame):
         if len(all_images) > 0:
             stretch_params = self.images["Original"].get_stretch()
             stretches = stretch_all(all_images, stretch_params)
+
+        i = 0
         for idx, img in enumerate(self.images.values()):
             if(img is not None):
-                img.update_display_from_array(stretches[idx])
+                img.update_display_from_array(stretches[i])
+                i = i+1
         self.loading_frame.end()
         
         self.redraw_image()
@@ -481,7 +993,7 @@ class Application(tk.Frame):
 
         self.loading_frame.start()
 
-        self.layered_image = multiscale_image.MultiScaleImage.decompose_image(self.images["Original"].img_array, self.num_layers)
+        self.multiscale_img = multiscale_image.MultiScaleImage.decompose_image(self.images["Original"].img_array, self.num_scales)
 
         self.loading_frame.end()
 
@@ -491,7 +1003,7 @@ class Application(tk.Frame):
             messagebox.showerror("Error", _("Please load your picture first."))
             return
 
-        if self.layered_image is None:
+        if self.multiscale_img is None:
             messagebox.showerror("Error", _("Please extract layers first"))
 
         
@@ -501,7 +1013,7 @@ class Application(tk.Frame):
         
 
         self.images["Processed"] = AstroImage(self.stretch_option_current, self.saturation)
-        self.images["Processed"].set_from_array(self.layered_image.recompose_image())
+        self.images["Processed"].set_from_array(self.multiscale_img.recompose_image())
  
         # Update fits header and metadata
         all_images = [self.images["Original"].img_array, self.images["Processed"].img_array]
@@ -515,6 +1027,42 @@ class Application(tk.Frame):
         self.loading_frame.end()
 
         return
+
+    def show_scale1(self):
+        self.show_scale(1)
+        return
+
+    def show_scale2(self):
+        self.show_scale(2)
+        return
+
+    def show_scale3(self):
+        self.show_scale(3)
+        return
+
+    def show_scale4(self):
+        self.show_scale(4)
+        return
+
+    def show_scale5(self):
+        self.show_scale(5)
+        return
+
+    def show_scale6(self):
+        self.show_scale(6)
+        return
+
+    def show_scale(self, num):
+        self.scale_img_to_show.set_from_array(self.multiscale_img.img_scales[num-1,:,:,:])
+        self.scale_img_to_show.update_display()
+
+        self.images["Scale"] = self.scale_img_to_show
+        self.display_type.set("Scale")
+
+        self.redraw_image()
+
+        return
+
     
     def enter_key(self,enter):
         
@@ -801,9 +1349,14 @@ class Application(tk.Frame):
         self.draw_image(self.images[self.display_type.get()].img_display_saturated)
             
     def switch_display(self, event):
-        if(self.images["Processed"] is None and self.display_type.get() != "Original"):
+        if(self.images["Processed"] is None and self.display_type.get() == "Processed"):
             self.display_type.set("Original")
-            messagebox.showerror("Error", _("Please select background points and press the Calculate button first"))         
+            messagebox.showerror("Error", _("Please process image first"))         
+            return
+
+        if(self.images["Scale"] is None and self.display_type.get() == "Scale"):
+            self.display_type.set("Original")
+            messagebox.showerror("Error", _("Please extract scales first"))         
             return
         
         self.loading_frame.start()
