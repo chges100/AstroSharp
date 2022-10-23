@@ -79,8 +79,8 @@ class MultiScaleImage:
         img_processed = np.copy(self.img_residual)
 
         for i in range(self.num_scales):
-            logging.info("Add layer {}".format(i))
-            img_processed = img_processed + self.img_scales[i,:,:,:]
+            logging.info("Add layer {} with detail factor {}".format(i, self.detail_boost[i]))
+            img_processed = img_processed + self.detail_boost[i] * self.img_scales[i,:,:,:]
 
         return img_processed
 

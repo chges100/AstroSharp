@@ -1008,10 +1008,9 @@ class Application(tk.Frame):
 
         
         self.loading_frame.start()
-        
-        imarray = np.copy(self.images["Original"].img_array)
-        
 
+        self.multiscale_img.set_detail_boost(np.array([self.scale1_detail.get(), self.scale2_detail.get(), self.scale3_detail.get()]))
+        
         self.images["Processed"] = AstroImage(self.stretch_option_current, self.saturation)
         self.images["Processed"].set_from_array(self.multiscale_img.recompose_image())
  
