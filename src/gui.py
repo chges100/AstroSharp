@@ -26,7 +26,7 @@ from PIL import Image, ImageTk
 from skimage import io
 from skimage.transform import resize
 
-import layer_extraction
+import layered_image
 import tooltip
 from astroimage import AstroImage
 from collapsible_frame import CollapsibleFrame
@@ -68,9 +68,11 @@ class Application(tk.Frame):
 
         self.images = {
             "Original": None,
-            "Layer": None,
             "Processed": None
             }
+
+        self.layered_image = None
+        self.num_layers = 6
         
         self.my_title = "AstroSharp"
         self.master.title(self.my_title)
@@ -109,7 +111,7 @@ class Application(tk.Frame):
         self.canvas.pack(side=tk.RIGHT, expand=True, fill=tk.BOTH)
         
         
-        self.display_options = ["Original","Processed","Layer"]
+        self.display_options = ["Original","Processed"]
         self.display_type = tk.StringVar()
         self.display_type.set(self.display_options[0])
         self.display_menu = ttk.OptionMenu(self.canvas, self.display_type, self.display_type.get(), *self.display_options, command=self.switch_display)
@@ -174,7 +176,7 @@ class Application(tk.Frame):
         self.sharp_menu.grid(column=0, row=1, pady=(5*scal,20*scal), padx=15*scal, sticky="news")
         self.sharp_menu.sub_frame.grid_columnconfigure(0, weight=1)
         
-        for i in range(11):
+        for i in range(19):
             self.sharp_menu.sub_frame.grid_rowconfigure(i, weight=1)
         
         #---Open Image---
@@ -232,32 +234,68 @@ class Application(tk.Frame):
         self.saturation_slider.bind("<ButtonRelease-1>", self.update_saturation)
         self.saturation_slider.grid(column=0, row=5, pady=(0,30*scal), padx=15*scal, sticky="ew")
       
-        #---Sample Selection---
+        #---Layer extraction---
         num_pic = ImageTk.PhotoImage(file=resource_path("img/gfx_number_3-scaled.png"))
-        text = tk.Label(self.sharp_menu.sub_frame, text=_(" Sample Selection"), image=num_pic, font=heading_font, compound="left")
+        text = tk.Label(self.sharp_menu.sub_frame, text=_(" Layer extraction"), image=num_pic, font=heading_font, compound="left")
         text.image = num_pic
         text.grid(column=0, row=6, pady=5*scal, padx=0, sticky="w")
+
+        self.extract_button = ttk.Button(self.sharp_menu.sub_frame, 
+                         text=_("Extract Layers"),
+                         command=self.extract)
+        self.extract_button.grid(column=0, row=7, pady=(5*scal,30*scal), padx=15*scal, sticky="news")
+        tt_calculate= tooltip.Tooltip(self.extract_button, text=tooltip.calculate_text)
+
+        #---Layers editor---
+        num_pic = ImageTk.PhotoImage(file=resource_path("img/gfx_number_3-scaled.png"))
+        text = tk.Label(self.sharp_menu.sub_frame, text=_(" Layer"), image=num_pic, font=heading_font, compound="left")
+        text.image = num_pic
+        text.grid(column=0, row=8, pady=5*scal, padx=0, sticky="w")
+
+        self.layer1_menu = CollapsibleFrame(self.sharp_menu.sub_frame, text=_("Layer 1") + " ")
+        self.layer1_menu.grid(column=0, row=9, pady=(5*scal,20*scal), padx=15*scal, sticky="news")
+        self.layer1_menu.sub_frame.grid_columnconfigure(0, weight=1)
+
+        self.layer2_menu = CollapsibleFrame(self.sharp_menu.sub_frame, text=_("Layer 2") + " ")
+        self.layer2_menu.grid(column=0, row=10, pady=(5*scal,20*scal), padx=15*scal, sticky="news")
+        self.layer2_menu.sub_frame.grid_columnconfigure(0, weight=1)
+
+        self.layer3_menu = CollapsibleFrame(self.sharp_menu.sub_frame, text=_("Layer 3") + " ")
+        self.layer3_menu.grid(column=0, row=11, pady=(5*scal,20*scal), padx=15*scal, sticky="news")
+        self.layer3_menu.sub_frame.grid_columnconfigure(0, weight=1)
+
+        self.layer4_menu = CollapsibleFrame(self.sharp_menu.sub_frame, text=_("Layer 4") + " ")
+        self.layer4_menu.grid(column=0, row=12, pady=(5*scal,20*scal), padx=15*scal, sticky="news")
+        self.layer4_menu.sub_frame.grid_columnconfigure(0, weight=1)
+
+        self.layer5_menu = CollapsibleFrame(self.sharp_menu.sub_frame, text=_("Layer 5") + " ")
+        self.layer5_menu.grid(column=0, row=13, pady=(5*scal,20*scal), padx=15*scal, sticky="news")
+        self.layer5_menu.sub_frame.grid_columnconfigure(0, weight=1)
+
+        self.layer6_menu = CollapsibleFrame(self.sharp_menu.sub_frame, text=_("Layer 6") + " ")
+        self.layer6_menu.grid(column=0, row=14, pady=(5*scal,20*scal), padx=15*scal, sticky="news")
+        self.layer6_menu.sub_frame.grid_columnconfigure(0, weight=1)
         
         
         
         #---Calculation---
         num_pic = ImageTk.PhotoImage(file=resource_path("img/gfx_number_4-scaled.png"))
-        text = tk.Label(self.sharp_menu.sub_frame, text=_(" Calculation"), image=num_pic, font=heading_font, compound="left")
+        text = tk.Label(self.sharp_menu.sub_frame, text=_(" Process Image"), image=num_pic, font=heading_font, compound="left")
         text.image = num_pic
-        text.grid(column=0, row=7, pady=5*scal, padx=0, sticky="w")
+        text.grid(column=0, row=15, pady=5*scal, padx=0, sticky="w")
         
         
         self.calculate_button = ttk.Button(self.sharp_menu.sub_frame, 
                          text=_("Calculate Background"),
                          command=self.calculate)
-        self.calculate_button.grid(column=0, row=8, pady=(5*scal,30*scal), padx=15*scal, sticky="news")
+        self.calculate_button.grid(column=0, row=16, pady=(5*scal,30*scal), padx=15*scal, sticky="news")
         tt_calculate= tooltip.Tooltip(self.calculate_button, text=tooltip.calculate_text)
         
         #---Saving---  
         num_pic = ImageTk.PhotoImage(file=resource_path("img/gfx_number_5-scaled.png"))
         self.saveas_text = tk.Label(self.sharp_menu.sub_frame, text=_(" Saving"), image=num_pic, font=heading_font, compound="left")
         self.saveas_text.image = num_pic
-        self.saveas_text.grid(column=0, row=9, pady=5*scal, padx=0, sticky="w")
+        self.saveas_text.grid(column=0, row=17, pady=5*scal, padx=0, sticky="w")
         
         self.saveas_options = ["16 bit Tiff", "32 bit Tiff", "16 bit Fits", "32 bit Fits", "16 bit XISF", "32 bit XISF"]
         self.saveas_type = tk.StringVar()
@@ -265,14 +303,14 @@ class Application(tk.Frame):
         if "saveas_option" in self.prefs:
             self.saveas_type.set(self.prefs["saveas_option"])
         self.saveas_menu = ttk.OptionMenu(self.sharp_menu.sub_frame, self.saveas_type, self.saveas_type.get(), *self.saveas_options)
-        self.saveas_menu.grid(column=0, row=10, pady=(5*scal,20*scal), padx=15*scal, sticky="news")
+        self.saveas_menu.grid(column=0, row=18, pady=(5*scal,20*scal), padx=15*scal, sticky="news")
         tt_interpol_type= tooltip.Tooltip(self.saveas_menu, text=tooltip.saveas_text)
               
         
         self.save_button = ttk.Button(self.sharp_menu.sub_frame, 
                          text=_("Save Processed"),
                          command=self.save_image)
-        self.save_button.grid(column=0, row=11, pady=(5*scal,10*scal), padx=15*scal, sticky="news")
+        self.save_button.grid(column=0, row=19, pady=(5*scal,10*scal), padx=15*scal, sticky="news")
         tt_save_pic= tooltip.Tooltip(self.save_button, text=tooltip.save_pic_text)
         
 
@@ -318,7 +356,6 @@ class Application(tk.Frame):
         
         self.display_type.set("Original")
         self.images["Processed"] = None
-        self.images["Layer"] = None
         
         self.master.title(self.my_title + " - " + os.path.basename(filename))
         self.filename = os.path.splitext(os.path.basename(filename))[0]
@@ -436,40 +473,36 @@ class Application(tk.Frame):
            
        self.loading_frame.end()
         
-    
+    def extract(self):
+        if self.images["Original"] is None:
+            messagebox.showerror("Error", _("Please load your picture first."))
+            return
+
+        self.layered_image = layered_image.LayeredImage.decompose_image(self.images["Original"].img_array, self.num_layers)
+
     def calculate(self):
 
         if self.images["Original"] is None:
             messagebox.showerror("Error", _("Please load your picture first."))
             return
 
+        if self.layered_image is None:
+            messagebox.showerror("Error", _("Please extract layers first"))
+
         
         self.loading_frame.start()
         
         imarray = np.copy(self.images["Original"].img_array)
         
-        downscale_factor = 1
-        
-
-        self.images["Layer"] = AstroImage(self.stretch_option_current, self.saturation)
-        self.images["Layer"].set_from_array(layer_extraction.extract_layers(imarray))
 
         self.images["Processed"] = AstroImage(self.stretch_option_current, self.saturation)
-        self.images["Processed"].set_from_array(imarray)
-        
+        self.images["Processed"].set_from_array(self.layered_image.recompose_image())
+ 
         # Update fits header and metadata
-        background_mean = np.mean(self.images["Layer"].img_array)
-        self.images["Processed"].update_fits_header(self.images["Original"].fits_header, background_mean)
-        self.images["Layer"].update_fits_header(self.images["Original"].fits_header, background_mean)#
-        
-        self.images["Processed"].copy_metadata(self.images["Original"])
-        self.images["Layer"].copy_metadata(self.images["Original"])
-
-        all_images = [self.images["Original"].img_array, self.images["Processed"].img_array, self.images["Layer"].img_array]
+        all_images = [self.images["Original"].img_array, self.images["Processed"].img_array]
         stretches = stretch_all(all_images, self.images["Original"].get_stretch())
         self.images["Original"].update_display_from_array(stretches[0])
         self.images["Processed"].update_display_from_array(stretches[1])
-        self.images["Layer"].update_display_from_array(stretches[2])
         
         self.display_type.set("Processed")
         self.redraw_image()
