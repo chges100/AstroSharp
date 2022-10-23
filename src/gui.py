@@ -26,7 +26,7 @@ from PIL import Image, ImageTk
 from skimage import io
 from skimage.transform import resize
 
-import layered_image
+import multiscale_image
 import tooltip
 from astroimage import AstroImage
 from collapsible_frame import CollapsibleFrame
@@ -234,47 +234,47 @@ class Application(tk.Frame):
         self.saturation_slider.bind("<ButtonRelease-1>", self.update_saturation)
         self.saturation_slider.grid(column=0, row=5, pady=(0,30*scal), padx=15*scal, sticky="ew")
       
-        #---Layer extraction---
+        #---Scale extraction---
         num_pic = ImageTk.PhotoImage(file=resource_path("img/gfx_number_3-scaled.png"))
-        text = tk.Label(self.sharp_menu.sub_frame, text=_(" Layer extraction"), image=num_pic, font=heading_font, compound="left")
+        text = tk.Label(self.sharp_menu.sub_frame, text=_(" Scale extraction"), image=num_pic, font=heading_font, compound="left")
         text.image = num_pic
         text.grid(column=0, row=6, pady=5*scal, padx=0, sticky="w")
 
         self.extract_button = ttk.Button(self.sharp_menu.sub_frame, 
-                         text=_("Extract Layers"),
+                         text=_("Extract Scales"),
                          command=self.extract)
         self.extract_button.grid(column=0, row=7, pady=(5*scal,30*scal), padx=15*scal, sticky="news")
         tt_calculate= tooltip.Tooltip(self.extract_button, text=tooltip.calculate_text)
 
-        #---Layers editor---
+        #---Scales editor---
         num_pic = ImageTk.PhotoImage(file=resource_path("img/gfx_number_3-scaled.png"))
-        text = tk.Label(self.sharp_menu.sub_frame, text=_(" Layer"), image=num_pic, font=heading_font, compound="left")
+        text = tk.Label(self.sharp_menu.sub_frame, text=_(" Adjust Scales"), image=num_pic, font=heading_font, compound="left")
         text.image = num_pic
         text.grid(column=0, row=8, pady=5*scal, padx=0, sticky="w")
 
-        self.layer1_menu = CollapsibleFrame(self.sharp_menu.sub_frame, text=_("Layer 1") + " ")
-        self.layer1_menu.grid(column=0, row=9, pady=(5*scal,20*scal), padx=15*scal, sticky="news")
-        self.layer1_menu.sub_frame.grid_columnconfigure(0, weight=1)
+        self.scale1_menu = CollapsibleFrame(self.sharp_menu.sub_frame, text=_("Scale 1") + " ")
+        self.scale1_menu.grid(column=0, row=9, pady=(5*scal,20*scal), padx=15*scal, sticky="news")
+        self.scale1_menu.sub_frame.grid_columnconfigure(0, weight=1)
 
-        self.layer2_menu = CollapsibleFrame(self.sharp_menu.sub_frame, text=_("Layer 2") + " ")
-        self.layer2_menu.grid(column=0, row=10, pady=(5*scal,20*scal), padx=15*scal, sticky="news")
-        self.layer2_menu.sub_frame.grid_columnconfigure(0, weight=1)
+        self.scale2_menu = CollapsibleFrame(self.sharp_menu.sub_frame, text=_("Scale 2") + " ")
+        self.scale2_menu.grid(column=0, row=10, pady=(5*scal,20*scal), padx=15*scal, sticky="news")
+        self.scale2_menu.sub_frame.grid_columnconfigure(0, weight=1)
 
-        self.layer3_menu = CollapsibleFrame(self.sharp_menu.sub_frame, text=_("Layer 3") + " ")
-        self.layer3_menu.grid(column=0, row=11, pady=(5*scal,20*scal), padx=15*scal, sticky="news")
-        self.layer3_menu.sub_frame.grid_columnconfigure(0, weight=1)
+        self.scale3_menu = CollapsibleFrame(self.sharp_menu.sub_frame, text=_("Scale 3") + " ")
+        self.scale3_menu.grid(column=0, row=11, pady=(5*scal,20*scal), padx=15*scal, sticky="news")
+        self.scale3_menu.sub_frame.grid_columnconfigure(0, weight=1)
 
-        self.layer4_menu = CollapsibleFrame(self.sharp_menu.sub_frame, text=_("Layer 4") + " ")
-        self.layer4_menu.grid(column=0, row=12, pady=(5*scal,20*scal), padx=15*scal, sticky="news")
-        self.layer4_menu.sub_frame.grid_columnconfigure(0, weight=1)
+        self.scale4_menu = CollapsibleFrame(self.sharp_menu.sub_frame, text=_("Scale 4") + " ")
+        self.scale4_menu.grid(column=0, row=12, pady=(5*scal,20*scal), padx=15*scal, sticky="news")
+        self.scale4_menu.sub_frame.grid_columnconfigure(0, weight=1)
 
-        self.layer5_menu = CollapsibleFrame(self.sharp_menu.sub_frame, text=_("Layer 5") + " ")
-        self.layer5_menu.grid(column=0, row=13, pady=(5*scal,20*scal), padx=15*scal, sticky="news")
-        self.layer5_menu.sub_frame.grid_columnconfigure(0, weight=1)
+        self.scale5_menu = CollapsibleFrame(self.sharp_menu.sub_frame, text=_("Scale 5") + " ")
+        self.scale5_menu.grid(column=0, row=13, pady=(5*scal,20*scal), padx=15*scal, sticky="news")
+        self.scale5_menu.sub_frame.grid_columnconfigure(0, weight=1)
 
-        self.layer6_menu = CollapsibleFrame(self.sharp_menu.sub_frame, text=_("Layer 6") + " ")
-        self.layer6_menu.grid(column=0, row=14, pady=(5*scal,20*scal), padx=15*scal, sticky="news")
-        self.layer6_menu.sub_frame.grid_columnconfigure(0, weight=1)
+        self.scale6_menu = CollapsibleFrame(self.sharp_menu.sub_frame, text=_("Scale 6") + " ")
+        self.scale6_menu.grid(column=0, row=14, pady=(5*scal,20*scal), padx=15*scal, sticky="news")
+        self.scale6_menu.sub_frame.grid_columnconfigure(0, weight=1)
         
         
         
@@ -286,7 +286,7 @@ class Application(tk.Frame):
         
         
         self.calculate_button = ttk.Button(self.sharp_menu.sub_frame, 
-                         text=_("Calculate Background"),
+                         text=_("Process Image"),
                          command=self.calculate)
         self.calculate_button.grid(column=0, row=16, pady=(5*scal,30*scal), padx=15*scal, sticky="news")
         tt_calculate= tooltip.Tooltip(self.calculate_button, text=tooltip.calculate_text)
@@ -481,7 +481,7 @@ class Application(tk.Frame):
 
         self.loading_frame.start()
 
-        self.layered_image = layered_image.LayeredImage.decompose_image(self.images["Original"].img_array, self.num_layers)
+        self.layered_image = multiscale_image.MultiScaleImage.decompose_image(self.images["Original"].img_array, self.num_layers)
 
         self.loading_frame.end()
 

@@ -14,7 +14,7 @@ import numpy as np
 import scipy as sp
 import astroimage
 
-class LayeredImage:
+class MultiScaleImage:
 
     def __init__(self, num_layers):
         self.img_layers = None
@@ -49,14 +49,14 @@ class LayeredImage:
 
         for color_channel in range(num_colors):
             for layer in range(num_layers):
-                futures_median_filtering.insert(color_channel*num_layers + layer, executor.submit(LayeredImage.apply_median_filters, shm_img_filtered.name, np.float32, img_orig.shape, color_channel, layer, num_layers, logging_queue, worker_configurer))
+                futures_median_filtering.insert(color_channel*num_layers + layer, executor.submit(MultiScaleImage.apply_median_filters, shm_img_filtered.name, np.float32, img_orig.shape, color_channel, layer, num_layers, logging_queue, worker_configurer))
 
         wait(futures_median_filtering)
 
         futures_layer_extraction = []
 
         for color_channel in range(num_colors):
-            futures_layer_extraction.insert(color_channel, executor.submit(LayeredImage.extract_layers, shm_img_filtered.name, shm_img_layers.name, np.float32, img_orig.shape, color_channel, num_layers, logging_queue, worker_configurer))
+            futures_layer_extraction.insert(color_channel, executor.submit(MultiScaleImage.extract_layers, shm_img_filtered.name, shm_img_layers.name, np.float32, img_orig.shape, color_channel, num_layers, logging_queue, worker_configurer))
 
         wait(futures_layer_extraction)
 
@@ -68,7 +68,7 @@ class LayeredImage:
         shm_img_filtered.unlink()
         shm_img_layers.unlink()
 
-        layered_image = LayeredImage(num_layers)
+        layered_image = MultiScaleImage(num_layers)
         layered_image.set_layers(img_layers)
         layered_image.set_residual(img_residual)
 
