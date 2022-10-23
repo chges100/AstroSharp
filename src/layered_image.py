@@ -75,10 +75,12 @@ class LayeredImage:
         return layered_image
 
     def recompose_image(self):
-        img_processed = self.img_residual
+        logging.info("Recompose image")
+        img_processed = np.copy(self.img_residual)
 
         for i in range(self.num_layers):
-            img_processed = img_processed + self.detail_boost[i] * self.img_layers[i,:,:,:]
+            logging.info("Add layer {}".format(i))
+            img_processed = img_processed + self.img_layers[i,:,:,:]
 
         return img_processed
 
@@ -99,7 +101,7 @@ class LayeredImage:
             img_layers_array = img_layers_array[:,:,:,color_channel]
 
             for i in range(num_layers):
-                img_layers_array[i,:,:] = img_filtered_array[i-1,:,:] - img_filtered_array[i,:,:]
+                img_layers_array[i,:,:] = img_filtered_array[i,:,:] - img_filtered_array[i+1,:,:]
         except:
             logging.exception("Error during image decomposition")
 

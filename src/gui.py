@@ -72,7 +72,7 @@ class Application(tk.Frame):
             }
 
         self.layered_image = None
-        self.num_layers = 6
+        self.num_layers = 2
         
         self.my_title = "AstroSharp"
         self.master.title(self.my_title)
@@ -474,11 +474,16 @@ class Application(tk.Frame):
        self.loading_frame.end()
         
     def extract(self):
+
         if self.images["Original"] is None:
             messagebox.showerror("Error", _("Please load your picture first."))
             return
 
+        self.loading_frame.start()
+
         self.layered_image = layered_image.LayeredImage.decompose_image(self.images["Original"].img_array, self.num_layers)
+
+        self.loading_frame.end()
 
     def calculate(self):
 
