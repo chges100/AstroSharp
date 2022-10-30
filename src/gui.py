@@ -66,15 +66,27 @@ class Application(tk.Frame):
         self.filename = ""
         self.data_type = ""
 
-        self.images = {
+        self.images_full = {
             "Original": None,
             "Processed": None,
             "Scale": None
-            }
+        }
+
+        self.images_preview = {
+            "Original": None,
+            "Processed": None,
+            "Scale": None
+        }
+        
+        self.images = self.images_full
 
         self.multiscale_img = None
+
+
+        self.preview_mode = False
+        self.preview_select_mode = False
+        self.preview_changed = False
         self.num_scales = 3
-        self.selected_scale_to_show = 1
         
         self.my_title = "AstroSharp"
         self.master.title(self.my_title)
@@ -103,11 +115,12 @@ class Application(tk.Frame):
         
         
         self.master.grid_columnconfigure(2)
+
         #Right help panel
         
         self.canvas = tk.Canvas(self.master, background="black", name="picture")
         
-        #self.help_panel = Help_Panel(self.master, self.canvas, self)
+        self.help_panel = Help_Panel(self.master, self.canvas, self)
         
        
         # Canvas
@@ -129,7 +142,7 @@ class Application(tk.Frame):
         self.clicked_inside_pt_idx = 0
         self.clicked_inside_pt_coord = None
         
-        self.crop_mode = False
+        self.preview_select_mode = False
         
         self.master.bind("<Button-1>", self.mouse_down_left)  
         self.master.bind("<ButtonRelease-1>", self.mouse_release_left)         # Left Mouse Button
@@ -155,24 +168,24 @@ class Application(tk.Frame):
         self.side_menu = tk.Frame(self.side_canvas, borderwidth=0)
         
         #Crop menu
-        self.crop_menu = CollapsibleFrame(self.side_menu, text=_("Crop") + " ")
-        self.crop_menu.grid(column=0, row=0, pady=(20*scal,5*scal), padx=15*scal, sticky="news")
-        self.crop_menu.sub_frame.grid_columnconfigure(0, weight=1)
+        self.preview_menu = CollapsibleFrame(self.side_menu, text=_("Create Preview") + " ")
+        self.preview_menu.grid(column=0, row=0, pady=(20*scal,5*scal), padx=15*scal, sticky="news")
+        self.preview_menu.sub_frame.grid_columnconfigure(0, weight=1)
         
         for i in range(2):
-            self.crop_menu.sub_frame.grid_rowconfigure(i, weight=1)
+            self.preview_menu.sub_frame.grid_rowconfigure(i, weight=1)
             
-        self.cropmode_button = ttk.Button(self.crop_menu.sub_frame, 
-                          text=_("Crop mode on/off"),
-                          command=self.toggle_crop_mode,
+        self.preview_mode_button = ttk.Button(self.preview_menu.sub_frame, 
+                          text=_("Select preview"),
+                          command=self.toggle_preview_select_mode,
         )
-        self.cropmode_button.grid(column=0, row=0, pady=(20*scal,5*scal), padx=15*scal, sticky="news")
+        self.preview_mode_button.grid(column=0, row=0, pady=(20*scal,5*scal), padx=15*scal, sticky="news")
         
-        self.cropapply_button = ttk.Button(self.crop_menu.sub_frame, 
-                          text=_("Apply crop"),
-                          command=self.crop_apply,
+        self.preview_apply_button = ttk.Button(self.preview_menu.sub_frame, 
+                          text=_("Apply preview"),
+                          command=self.preview_apply,
         )
-        self.cropapply_button.grid(column=0, row=1, pady=(5*scal,20*scal), padx=15*scal, sticky="news")
+        self.preview_apply_button.grid(column=0, row=1, pady=(5*scal,20*scal), padx=15*scal, sticky="news")
 
         
         #Background extraction menu
@@ -884,36 +897,52 @@ class Application(tk.Frame):
         self.loading_frame.end()
         return
     
-    def toggle_crop_mode(self):
+    def toggle_preview_select_mode(self):
         
         if self.images["Original"] is None:
             messagebox.showerror("Error", _("Please load your picture first."))
             return
-        
-        self.startx = 0
-        self.starty = 0
-        self.endx = self.images["Original"].width
-        self.endy = self.images["Original"].height
 
-        if(self.crop_mode):
-            self.crop_mode = False
+        self.preview_changed = True
+
+        if(self.preview_select_mode):
+            self.preview_select_mode = False
         else:
-            self.crop_mode = True
+            self.startx = 0
+            self.starty = 0
+            self.endx = self.images["Original"].width
+            self.endy = self.images["Original"].height
+            self.preview_select_mode = True
+
+        self.redraw_preview_rect()
 
         
-    def crop_apply(self):
-        
-        if (not self.crop_mode):
+    def preview_apply(self):
+        if self.images["Original"] == None:
             return
-        
-        for astroimg in self.images.values():
-            if(astroimg is not None):
-                astroimg.crop(self.startx, self.endx, self.starty, self.endy)
 
-        self.crop_mode = False
+        if self.preview_mode == True:
+            self.images = self.images_full
+            self.preview_mode = False
+            #self.preview_apply_button.text.set("Apply Preview")
+        else:
+            if self.preview_changed == True:
+                preview_img = AstroImage(self.images["Original"].stretch_option, self.images["Original"].saturation)
+                preview_img.set_from_array(self.images["Original"].img_array[self.startx:self.endx,self.starty:self.endy,:])
+                preview_img.stretch()
+                preview_img.update_display()
+                self.images_preview["Original"] = preview_img
+
+                self.preview_changed = False
+            
+            #self.preview_apply_button.text.set("Show Full image")
+            self.images = self.images_preview
+            self.preview_mode = True
+
+        self.preview_select_mode = False
         self.zoom_fit(self.images[self.display_type.get()].width, self.images[self.display_type.get()].height)
         self.redraw_image()
-        self.redraw_points()
+        self.redraw_preview_rect()
         return
         
 
@@ -1074,7 +1103,7 @@ class Application(tk.Frame):
         if(str(event.widget).split(".")[-1] != "picture" or self.images["Original"] is None):
             return
         
-        if(self.crop_mode):
+        if(self.preview_select_mode):
             #Check if inside circles to move crop corners
             corner1 = self.to_canvas_point(self.startx, self.starty)
             corner2 = self.to_canvas_point(self.endx, self.endy)
@@ -1091,6 +1120,8 @@ class Application(tk.Frame):
         
         self.__old_event = event
         self.left_drag_timer = -1
+
+        self.redraw_preview_rect()
         
     def mouse_move_left(self, event):
         
@@ -1103,7 +1134,7 @@ class Application(tk.Frame):
         if(self.left_drag_timer == -1):
             self.left_drag_timer = event.time
 
-        elif(self.clicked_inside_pt and self.crop_mode):
+        elif(self.clicked_inside_pt and self.preview_select_mode):
             new_point = self.to_image_point_pinned(event.x, event.y)
             corner1_canvas = self.to_canvas_point(self.startx, self.starty)
             corner2_canvas = self.to_canvas_point(self.endx, self.endy)
@@ -1115,7 +1146,9 @@ class Application(tk.Frame):
                 self.starty = int(new_point[1])
             else:
                 self.endx = int(new_point[0])
-                self.endy = int(new_point[1])                      
+                self.endy = int(new_point[1])
+
+            self.redraw_preview_rect()                      
         else:
             if(event.time - self.left_drag_timer >= 100):            
                 self.translate(event.x - self.__old_event.x, event.y - self.__old_event.y)
@@ -1155,6 +1188,7 @@ class Application(tk.Frame):
         if self.images[self.display_type.get()] is None:
             return
         self.zoom_fit(self.images[self.display_type.get()].width, self.images[self.display_type.get()].height)
+        self.redraw_preview_rect()
         self.redraw_image()
 
 
@@ -1200,7 +1234,28 @@ class Application(tk.Frame):
        
             self.redraw_image()
 
+
+    def redraw_preview_rect(self):
         
+        if self.images["Original"] is None:
+            return
+    
+        color = hls_to_rgb(self.sample_color.get()/360, 0.5, 1.0)
+        color = (int(color[0]*255), int(color[1]*255), int(color[2]*255))
+        color = '#%02x%02x%02x' % color
+        
+        self.canvas.delete("crop") 
+        
+        
+        if self.preview_select_mode:
+            corner1 = self.to_canvas_point(self.startx, self.starty)
+            corner2 = self.to_canvas_point(self.endx, self.endy)
+            self.canvas.create_rectangle(corner1[0],corner1[1], corner2[0],corner2[1], outline=color, width=2, tags="crop")
+            self.canvas.create_oval(corner1[0]-15,corner1[1]-15, corner1[0]+15,corner1[1]+15, outline=color, width=2, tags="crop")
+            self.canvas.create_oval(corner2[0]-15,corner2[1]-15, corner2[0]+15,corner2[1]+15, outline=color, width=2, tags="crop")
+        return  
+
+
 
     def reset_transform(self):
 
@@ -1339,6 +1394,7 @@ class Application(tk.Frame):
                 )
 
         self.image = im
+        self.redraw_preview_rect()
         return
 
     def redraw_image(self):
@@ -1366,6 +1422,7 @@ class Application(tk.Frame):
         self.prefs["stretch_option"] = self.stretch_option_current.get()
         self.prefs["saturation"] = self.saturation.get()
         self.prefs["saveas_option"] = self.saveas_type.get()
+        self.prefs["sample_color"] = self.sample_color.get()
         #self.prefs["lang"] = self.lang.get()
         prefs_filename = os.path.join(user_config_dir(appname="AstroSharp"), "preferences.json")
         save_preferences(prefs_filename, self.prefs)

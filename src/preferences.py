@@ -15,6 +15,7 @@ class Prefs(TypedDict):
     stretch_option: AnyStr
     saturation: float
     saveas_option: AnyStr
+    sample_color: int
     lang: AnyStr
 
 DEFAULT_PREFS: Prefs = {
@@ -24,7 +25,8 @@ DEFAULT_PREFS: Prefs = {
     "stretch_option": "No Stretch",
     "saturation": 1.0,
     "saveas_option": "32 bit Tiff",
-    "lang": None,
+    "sample_color": 55,
+    "lang": None
 }
 
 
@@ -41,6 +43,8 @@ def merge_json(prefs: Prefs, json) -> Prefs:
         prefs["saturation"] = json["saturation"]
     if "saveas_option" in json:
         prefs["saveas_option"] = json["saveas_option"]
+    if "sample_color" in json:
+        prefs["sample_color"] = json["sample_color"]
     if "lang" in json:
         prefs["lang"] = json["lang"]
     return prefs
