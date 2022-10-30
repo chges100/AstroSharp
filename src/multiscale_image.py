@@ -59,7 +59,7 @@ class MultiScaleImage:
         self.img_residual = None
         self.num_scales = num_scales
         self.detail_boost = np.ones(num_scales)
-        self.denoise_amount = np.ones(num_scales)
+        self.denoise_amount = np.zeros(num_scales)
         self.denoise_threshold = np.ones(num_scales)
 
     def set_scales(self, img_scales):
@@ -130,8 +130,8 @@ class MultiScaleImage:
         for i in range(self.num_scales):
             for color_channel in range(num_colors):
                 logging.info("Add layer {} with detail factor {}".format(i, self.detail_boost[i]))
-                img_processed[:,:,color_channel] = img_processed[:,:,color_channel] + self.detail_boost[i] * np.multiply((np.absolute(self.img_scales[i,:,:,color_channel]) < self.denoise_threshold[i]) * (1 - self.denoise_amount[i]), self.img_scales[i,:,:,color_channel])
-
+                img_processed[:,:,color_channel] = img_processed[:,:,color_channel] + self.detail_boost[i] * self.img_scales[i,:,:,color_channel] - np.multiply((np.absolute(self.img_scales[i,:,:,color_channel]) < self.denoise_threshold[i]) * self.denoise_amount[i], self.img_scales[i,:,:,color_channel])
+                #img_processed[:,:,color_channel] = img_processed[:,:,color_channel] +  self.img_scales[i,:,:,color_channel]
         return img_processed
 
     @staticmethod
@@ -152,6 +152,7 @@ class MultiScaleImage:
 
             for i in range(num_scales):
                 img_scales_array[i,:,:] = img_filtered_array[i,:,:] - img_filtered_array[i+1,:,:]
+                logging.info("Statistics of extracted scale: {} color: {} min: {} max: {}".format(i, color_channel, np.min(img_scales_array[i,:,:]), np.max(img_scales_array[i,:,:])))
         except:
             logging.exception("Error during image decomposition")
 
