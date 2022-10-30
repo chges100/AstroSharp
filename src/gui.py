@@ -360,7 +360,7 @@ class Application(tk.Frame):
 
         #---Scale 2 menu---
 
-        self.scale2_menu = CollapsibleFrame(self.sharp_menu.sub_frame, text=_("Scale 2") + " ")
+        self.scale2_menu = CollapsibleFrame(self.sharp_menu.sub_frame, text=_("Scale 2") + " ", nested=True)
         self.scale2_menu.grid(column=0, row=10, pady=(5*scal,20*scal), padx=15*scal, sticky="news")
         self.scale2_menu.sub_frame.grid_columnconfigure(0, weight=1)
 
@@ -448,7 +448,7 @@ class Application(tk.Frame):
 
         #---Scale 3 menu---
 
-        self.scale3_menu = CollapsibleFrame(self.sharp_menu.sub_frame, text=_("Scale 3") + " ")
+        self.scale3_menu = CollapsibleFrame(self.sharp_menu.sub_frame, text=_("Scale 3") + " ", nested=True)
         self.scale3_menu.grid(column=0, row=11, pady=(5*scal,20*scal), padx=15*scal, sticky="news")
         self.scale3_menu.sub_frame.grid_columnconfigure(0, weight=1)
 
@@ -536,7 +536,7 @@ class Application(tk.Frame):
 
         #---Scale 4 menu---
 
-        self.scale4_menu = CollapsibleFrame(self.sharp_menu.sub_frame, text=_("Scale 4") + " ")
+        self.scale4_menu = CollapsibleFrame(self.sharp_menu.sub_frame, text=_("Scale 4") + " ", nested=True)
         self.scale4_menu.grid(column=0, row=12, pady=(5*scal,20*scal), padx=15*scal, sticky="news")
         self.scale4_menu.sub_frame.grid_columnconfigure(0, weight=1)
 
@@ -624,7 +624,7 @@ class Application(tk.Frame):
 
         #---Scale 5 menu---
 
-        self.scale5_menu = CollapsibleFrame(self.sharp_menu.sub_frame, text=_("Scale 5") + " ")
+        self.scale5_menu = CollapsibleFrame(self.sharp_menu.sub_frame, text=_("Scale 5") + " ", nested=True)
         self.scale5_menu.grid(column=0, row=13, pady=(5*scal,20*scal), padx=15*scal, sticky="news")
         self.scale5_menu.sub_frame.grid_columnconfigure(0, weight=1)
 
@@ -712,7 +712,7 @@ class Application(tk.Frame):
 
         #---Scale 6 menu---
 
-        self.scale6_menu = CollapsibleFrame(self.sharp_menu.sub_frame, text=_("Scale 6") + " ")
+        self.scale6_menu = CollapsibleFrame(self.sharp_menu.sub_frame, text=_("Scale 6") + " ", nested=True)
         self.scale6_menu.grid(column=0, row=14, pady=(5*scal,20*scal), padx=15*scal, sticky="news")
         self.scale6_menu.sub_frame.grid_columnconfigure(0, weight=1)
 

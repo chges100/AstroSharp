@@ -12,7 +12,45 @@ from mp_logging import get_logging_queue, worker_configurer
 
 import numpy as np
 import scipy as sp
+import skimage as sk
 import astroimage
+
+downsample_threshold_scale = 3
+
+# build up circular masks for median filter
+median_filter_masks = []
+median_filter_masks.append(np.array([[1,1,1],[1,1,1],[1,1,1]]))
+median_filter_masks.append(np.array([[0,1,1,1,0],
+                                     [1,1,1,1,1],
+                                     [1,1,1,1,1],
+                                     [1,1,1,1,1],
+                                     [0,1,1,1,0]]))
+median_filter_masks.append(np.array([[0,0,0,1,1,1,0,0,0],
+                                     [0,0,1,1,1,1,1,0,0],
+                                     [0,1,1,1,1,1,1,1,0],
+                                     [1,1,1,1,1,1,1,1,1],
+                                     [1,1,1,1,1,1,1,1,1],
+                                     [1,1,1,1,1,1,1,1,1],
+                                     [0,1,1,1,1,1,1,1,0],
+                                     [0,0,1,1,1,1,1,0,0],
+                                     [0,0,0,1,1,1,0,0,0]]))
+median_filter_masks.append(np.array([[0,0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,0],
+                                     [0,0,0,0,0,1,1,1,1,1,1,1,0,0,0,0,0],
+                                     [0,0,0,0,1,1,1,1,1,1,1,1,1,0,0,0,0],
+                                     [0,0,0,1,1,1,1,1,1,1,1,1,1,1,0,0,0],
+                                     [0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0],
+                                     [0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0],
+                                     [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+                                     [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+                                     [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+                                     [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+                                     [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+                                     [0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0],
+                                     [0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,0,0],
+                                     [0,0,0,1,1,1,1,1,1,1,1,1,1,1,0,0,0],
+                                     [0,0,0,0,1,1,1,1,1,1,1,1,1,0,0,0,0],
+                                     [0,0,0,0,0,1,1,1,1,1,1,1,0,0,0,0,0],
+                                     [0,0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,0]]))
 
 class MultiScaleImage:
 
@@ -113,7 +151,7 @@ class MultiScaleImage:
     def apply_median_filters(shm_img_filtered_name, dtype, shape, color_channel, selected_scale, num_scales, logging_queue, logging_configurer):
 
         logging_configurer(logging_queue)
-        logging.info("median filtering of level {} started for color channel {} started".format(selected_scale, color_channel))
+        logging.info("median filtering of level {} for color channel {} started".format(selected_scale, color_channel))
 
         try:
             ex_shm_img_filtered = shared_memory.SharedMemory(name=shm_img_filtered_name)
@@ -121,14 +159,21 @@ class MultiScaleImage:
             img_filtered_array = np.ndarray(np.concatenate([[num_scales+1], shape]), dtype, buffer=ex_shm_img_filtered.buf)
             img_filtered_array = img_filtered_array[:,:,:,color_channel]
 
-            img_filtered_array[selected_scale+1,:,:] = sp.signal.medfilt2d(img_filtered_array[0,:,:], 2**(selected_scale + 1) + 1)
+            if selected_scale <= downsample_threshold_scale:
+                img_filtered_array[selected_scale+1,:,:] = sp.ndimage.median_filter(img_filtered_array[0,:,:], footprint=median_filter_masks[selected_scale])
+            else:
+                orig_shape = img_filtered_array[0,:,:].shape
+                img_downsampled = sk.transform.rescale(img_filtered_array[0,:,:], scale=1/(2**(selected_scale-downsample_threshold_scale)))
+                logging.info("Downscale image before median calculation of level {} for color channel {} to size {}".format(selected_scale, color_channel, img_downsampled.shape))
+                img_filtered = sp.ndimage.median_filter(img_downsampled, footprint=median_filter_masks[downsample_threshold_scale])
+                img_filtered_array[selected_scale+1,:,:] = sk.transform.resize_local_mean(img_filtered, orig_shape)
 
 
         except:
             logging.exception("Error during median filtering")
 
         ex_shm_img_filtered.close()
-        logging.info("median filtering of level {} started for color channel {} finished".format(selected_scale, color_channel))
+        logging.info("median filtering of level {} for color channel {} finished".format(selected_scale, color_channel))
         
 
 
