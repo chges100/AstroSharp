@@ -86,7 +86,7 @@ class Application(tk.Frame):
         self.preview_mode = False
         self.preview_select_mode = False
         self.preview_changed = False
-        self.num_scales = 3
+        self.num_scales = 6
         
         self.my_title = "AstroSharp"
         self.master.title(self.my_title)
@@ -903,6 +903,10 @@ class Application(tk.Frame):
             messagebox.showerror("Error", _("Please load your picture first."))
             return
 
+        if self.preview_mode == True:
+            messagebox.showerror("Error", _("Cannot select preview in preview mode"))
+            return
+
         self.preview_changed = True
 
         if(self.preview_select_mode):
@@ -918,24 +922,31 @@ class Application(tk.Frame):
 
         
     def preview_apply(self):
-        if self.images["Original"] == None:
+        if self.images["Original"] is None:
+            messagebox.showerror("Error", _("Please load your picture first."))
             return
+
+        self.preview_select_mode = False
 
         if self.preview_mode == True:
             self.images = self.images_full
             self.preview_mode = False
-            #self.preview_apply_button.text.set("Apply Preview")
+            self.preview_apply_button["text"] = "Apply Preview"
         else:
             if self.preview_changed == True:
                 preview_img = AstroImage(self.images["Original"].stretch_option, self.images["Original"].saturation)
-                preview_img.set_from_array(self.images["Original"].img_array[self.startx:self.endx,self.starty:self.endy,:])
+                preview_img.set_from_array(self.images["Original"].img_array[self.starty:self.endy,self.startx:self.endx,:])
                 preview_img.stretch()
                 preview_img.update_display()
                 self.images_preview["Original"] = preview_img
 
                 self.preview_changed = False
+            else:
+                if self.images_preview["Original"] is None:
+                    messagebox.showerror("Error", _("Please select a preview area first."))
+                    return
             
-            #self.preview_apply_button.text.set("Show Full image")
+            self.preview_apply_button["text"] = "End preview"
             self.images = self.images_preview
             self.preview_mode = True
 
@@ -1038,7 +1049,7 @@ class Application(tk.Frame):
         
         self.loading_frame.start()
 
-        self.multiscale_img.set_detail_boost(np.array([self.scale1_detail.get(), self.scale2_detail.get(), self.scale3_detail.get()]))
+        self.multiscale_img.set_detail_boost(np.array([self.scale1_detail.get(), self.scale2_detail.get(), self.scale3_detail.get(), self.scale4_detail.get(), self.scale5_detail.get(), self.scale6_detail.get()]))
         
         self.images["Processed"] = AstroImage(self.stretch_option_current, self.saturation)
         self.images["Processed"].set_from_array(self.multiscale_img.recompose_image())
@@ -1082,6 +1093,7 @@ class Application(tk.Frame):
 
     def show_scale(self, num):
         self.scale_img_to_show.set_from_array(self.multiscale_img.img_scales[num-1,:,:,:])
+        self.scale_img_to_show.is_scale_preview = True
         self.scale_img_to_show.update_display()
 
         self.images["Scale"] = self.scale_img_to_show
