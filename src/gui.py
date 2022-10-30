@@ -190,7 +190,7 @@ class Application(tk.Frame):
         
         #Background extraction menu
         self.sharp_menu = CollapsibleFrame(self.side_menu, text=_("Sharpen and Denoise") + " ")
-        self.sharp_menu.grid(column=0, row=1, pady=(5*scal,20*scal), padx=15*scal, sticky="news")
+        self.sharp_menu.grid(column=0, row=1, pady=(20*scal,5*scal), padx=15*scal, sticky="news")
         self.sharp_menu.sub_frame.grid_columnconfigure(0, weight=1)
         
         for i in range(19):
@@ -272,7 +272,7 @@ class Application(tk.Frame):
 
         #---Scale 1 menu---
 
-        self.scale1_menu = CollapsibleFrame(self.sharp_menu.sub_frame, text=_("Scale 1") + " ")
+        self.scale1_menu = CollapsibleFrame(self.sharp_menu.sub_frame, text=_("Scale 1") + " ", nested=True)
         self.scale1_menu.grid(column=0, row=9, pady=(5*scal,20*scal), padx=15*scal, sticky="news")
         self.scale1_menu.sub_frame.grid_columnconfigure(0, weight=1)
 

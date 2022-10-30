@@ -1,9 +1,15 @@
 import tkinter as tk
 from tkinter import ttk 
 
+from mp_logging import configure_logging, initialize_logging, shutdown_logging
+
+configure_logging()
+
+import logging
+
 class CollapsibleFrame(tk.Frame):
 
-    def __init__(self, parent, text="", *args, **options):
+    def __init__(self, parent, text="", nested = False, *args, **options):
         tk.Frame.__init__(self, parent, *args, **options)
 
         self.show = tk.IntVar()
@@ -11,6 +17,8 @@ class CollapsibleFrame(tk.Frame):
 
         self.title_frame = ttk.Frame(self)
         self.title_frame.pack(fill="x", expand=1)
+
+        self.nested = nested
 
         ttk.Label(self.title_frame, text=text, font="Verdana 10 bold").pack(side="left", fill="x", expand=1)
 
@@ -30,7 +38,17 @@ class CollapsibleFrame(tk.Frame):
         
         self.update()
         self.master.update()
-        width = self.master.winfo_width()
-        self.master.master.configure(width=width)
-        self.master.master.configure(scrollregion=self.master.master.bbox("all"))
-        self.master.master.yview_moveto("0.0")
+
+        # use nested option only if collapsible frame is embedded into other collapsible frame 
+        if self.nested is True:
+            self.master.master.master.update()
+            width = self.master.master.master.winfo_width()
+            self.master.master.master.master.configure(width=width)
+            self.master.master.master.master.configure(scrollregion=self.master.master.master.master.bbox("all"))
+            self.master.master.master.master.yview_moveto("0.0")
+        else:
+            width = self.master.winfo_width()
+            self.master.master.configure(width=width)
+            self.master.master.configure(scrollregion=self.master.master.bbox("all"))
+            self.master.master.yview_moveto("0.0")
+        
