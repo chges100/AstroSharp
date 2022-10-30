@@ -304,7 +304,7 @@ class Application(tk.Frame):
         self.scale1_detail_slider.grid(column=0, row=1, pady=(0,30*scal), padx=15*scal, sticky="ew")
 
         self.scale1_denoise_thr = tk.DoubleVar()
-        self.scale1_denoise_thr.set(1.0)
+        self.scale1_denoise_thr.set(0.4)
 
         self.scale1_denoise_thr_text = tk.Message(self.scale1_menu.sub_frame, text=_("Denoise detail threshold") + ": {:.1f}".format(self.scale1_denoise_thr.get()))
         self.scale1_denoise_thr_text.config(width=500 * scal)
@@ -319,7 +319,7 @@ class Application(tk.Frame):
             self.scale1_menu.sub_frame,
             orient=tk.HORIZONTAL,
             from_=0.0,
-            to=5.0,
+            to=2.0,
             var=self.scale1_denoise_thr,
             command=on_scale1_denoise_thr_slider,
             length=130
@@ -328,7 +328,7 @@ class Application(tk.Frame):
         self.scale1_denoise_thr_slider.grid(column=0, row=3, pady=(0,30*scal), padx=15*scal, sticky="ew")
 
         self.scale1_denoise_amount = tk.DoubleVar()
-        self.scale1_denoise_amount.set(1.0)
+        self.scale1_denoise_amount.set(0.0)
 
         self.scale1_denoise_amount_text = tk.Message(self.scale1_menu.sub_frame, text=_("Denoise amount") + ": {:.1f}".format(self.scale1_denoise_amount.get()))
         self.scale1_denoise_amount_text.config(width=500 * scal)
@@ -392,7 +392,7 @@ class Application(tk.Frame):
         self.scale2_detail_slider.grid(column=0, row=1, pady=(0,30*scal), padx=15*scal, sticky="ew")
 
         self.scale2_denoise_thr = tk.DoubleVar()
-        self.scale2_denoise_thr.set(1.0)
+        self.scale2_denoise_thr.set(0.4)
 
         self.scale2_denoise_thr_text = tk.Message(self.scale2_menu.sub_frame, text=_("Denoise detail threshold") + ": {:.1f}".format(self.scale2_denoise_thr.get()))
         self.scale2_denoise_thr_text.config(width=500 * scal)
@@ -407,7 +407,7 @@ class Application(tk.Frame):
             self.scale2_menu.sub_frame,
             orient=tk.HORIZONTAL,
             from_=0.0,
-            to=5.0,
+            to=2.0,
             var=self.scale2_denoise_thr,
             command=on_scale2_denoise_thr_slider,
             length=130
@@ -416,7 +416,7 @@ class Application(tk.Frame):
         self.scale2_denoise_thr_slider.grid(column=0, row=3, pady=(0,30*scal), padx=15*scal, sticky="ew")
 
         self.scale2_denoise_amount = tk.DoubleVar()
-        self.scale2_denoise_amount.set(1.0)
+        self.scale2_denoise_amount.set(0.0)
 
         self.scale2_denoise_amount_text = tk.Message(self.scale2_menu.sub_frame, text=_("Denoise amount") + ": {:.1f}".format(self.scale2_denoise_amount.get()))
         self.scale2_denoise_amount_text.config(width=500 * scal)
@@ -480,7 +480,7 @@ class Application(tk.Frame):
         self.scale3_detail_slider.grid(column=0, row=1, pady=(0,30*scal), padx=15*scal, sticky="ew")
 
         self.scale3_denoise_thr = tk.DoubleVar()
-        self.scale3_denoise_thr.set(1.0)
+        self.scale3_denoise_thr.set(0.4)
 
         self.scale3_denoise_thr_text = tk.Message(self.scale3_menu.sub_frame, text=_("Denoise detail threshold") + ": {:.1f}".format(self.scale3_denoise_thr.get()))
         self.scale3_denoise_thr_text.config(width=500 * scal)
@@ -495,7 +495,7 @@ class Application(tk.Frame):
             self.scale3_menu.sub_frame,
             orient=tk.HORIZONTAL,
             from_=0.0,
-            to=5.0,
+            to=2.0,
             var=self.scale3_denoise_thr,
             command=on_scale3_denoise_thr_slider,
             length=130
@@ -504,7 +504,7 @@ class Application(tk.Frame):
         self.scale3_denoise_thr_slider.grid(column=0, row=3, pady=(0,30*scal), padx=15*scal, sticky="ew")
 
         self.scale3_denoise_amount = tk.DoubleVar()
-        self.scale3_denoise_amount.set(1.0)
+        self.scale3_denoise_amount.set(0.0)
 
         self.scale3_denoise_amount_text = tk.Message(self.scale3_menu.sub_frame, text=_("Denoise amount") + ": {:.1f}".format(self.scale3_denoise_amount.get()))
         self.scale3_denoise_amount_text.config(width=500 * scal)
@@ -568,7 +568,7 @@ class Application(tk.Frame):
         self.scale4_detail_slider.grid(column=0, row=1, pady=(0,30*scal), padx=15*scal, sticky="ew")
 
         self.scale4_denoise_thr = tk.DoubleVar()
-        self.scale4_denoise_thr.set(1.0)
+        self.scale4_denoise_thr.set(0.4)
 
         self.scale4_denoise_thr_text = tk.Message(self.scale4_menu.sub_frame, text=_("Denoise detail threshold") + ": {:.1f}".format(self.scale4_denoise_thr.get()))
         self.scale4_denoise_thr_text.config(width=500 * scal)
@@ -583,7 +583,7 @@ class Application(tk.Frame):
             self.scale4_menu.sub_frame,
             orient=tk.HORIZONTAL,
             from_=0.0,
-            to=5.0,
+            to=2.0,
             var=self.scale4_denoise_thr,
             command=on_scale4_denoise_thr_slider,
             length=130
@@ -592,7 +592,7 @@ class Application(tk.Frame):
         self.scale4_denoise_thr_slider.grid(column=0, row=3, pady=(0,30*scal), padx=15*scal, sticky="ew")
 
         self.scale4_denoise_amount = tk.DoubleVar()
-        self.scale4_denoise_amount.set(1.0)
+        self.scale4_denoise_amount.set(0.0)
 
         self.scale4_denoise_amount_text = tk.Message(self.scale4_menu.sub_frame, text=_("Denoise amount") + ": {:.1f}".format(self.scale4_denoise_amount.get()))
         self.scale4_denoise_amount_text.config(width=500 * scal)
@@ -656,7 +656,7 @@ class Application(tk.Frame):
         self.scale5_detail_slider.grid(column=0, row=1, pady=(0,30*scal), padx=15*scal, sticky="ew")
 
         self.scale5_denoise_thr = tk.DoubleVar()
-        self.scale5_denoise_thr.set(1.0)
+        self.scale5_denoise_thr.set(0.4)
 
         self.scale5_denoise_thr_text = tk.Message(self.scale5_menu.sub_frame, text=_("Denoise detail threshold") + ": {:.1f}".format(self.scale5_denoise_thr.get()))
         self.scale5_denoise_thr_text.config(width=500 * scal)
@@ -671,7 +671,7 @@ class Application(tk.Frame):
             self.scale5_menu.sub_frame,
             orient=tk.HORIZONTAL,
             from_=0.0,
-            to=5.0,
+            to=2.0,
             var=self.scale5_denoise_thr,
             command=on_scale5_denoise_thr_slider,
             length=130
@@ -680,7 +680,7 @@ class Application(tk.Frame):
         self.scale5_denoise_thr_slider.grid(column=0, row=3, pady=(0,30*scal), padx=15*scal, sticky="ew")
 
         self.scale5_denoise_amount = tk.DoubleVar()
-        self.scale5_denoise_amount.set(1.0)
+        self.scale5_denoise_amount.set(0.0)
 
         self.scale5_denoise_amount_text = tk.Message(self.scale5_menu.sub_frame, text=_("Denoise amount") + ": {:.1f}".format(self.scale5_denoise_amount.get()))
         self.scale5_denoise_amount_text.config(width=500 * scal)
@@ -744,7 +744,7 @@ class Application(tk.Frame):
         self.scale6_detail_slider.grid(column=0, row=1, pady=(0,30*scal), padx=15*scal, sticky="ew")
 
         self.scale6_denoise_thr = tk.DoubleVar()
-        self.scale6_denoise_thr.set(1.0)
+        self.scale6_denoise_thr.set(0.4)
 
         self.scale6_denoise_thr_text = tk.Message(self.scale6_menu.sub_frame, text=_("Denoise detail threshold") + ": {:.1f}".format(self.scale6_denoise_thr.get()))
         self.scale6_denoise_thr_text.config(width=500 * scal)
@@ -759,7 +759,7 @@ class Application(tk.Frame):
             self.scale6_menu.sub_frame,
             orient=tk.HORIZONTAL,
             from_=0.0,
-            to=5.0,
+            to=2.0,
             var=self.scale6_denoise_thr,
             command=on_scale6_denoise_thr_slider,
             length=130
@@ -768,7 +768,7 @@ class Application(tk.Frame):
         self.scale6_denoise_thr_slider.grid(column=0, row=3, pady=(0,30*scal), padx=15*scal, sticky="ew")
 
         self.scale6_denoise_amount = tk.DoubleVar()
-        self.scale6_denoise_amount.set(1.0)
+        self.scale6_denoise_amount.set(0.0)
 
         self.scale6_denoise_amount_text = tk.Message(self.scale6_menu.sub_frame, text=_("Denoise amount") + ": {:.1f}".format(self.scale6_denoise_amount.get()))
         self.scale6_denoise_amount_text.config(width=500 * scal)
@@ -1050,6 +1050,8 @@ class Application(tk.Frame):
         self.loading_frame.start()
 
         self.multiscale_img.set_detail_boost(np.array([self.scale1_detail.get(), self.scale2_detail.get(), self.scale3_detail.get(), self.scale4_detail.get(), self.scale5_detail.get(), self.scale6_detail.get()]))
+        self.multiscale_img.set_denoise_amount(np.array([self.scale1_denoise_amount.get(), self.scale2_denoise_amount.get(), self.scale3_denoise_amount.get(), self.scale4_denoise_amount.get(), self.scale5_denoise_amount.get(), self.scale6_denoise_amount.get()]))
+        self.multiscale_img.set_denoise_threshold(np.array([self.scale1_denoise_thr.get(), self.scale2_denoise_thr.get(), self.scale3_denoise_thr.get(), self.scale4_denoise_thr.get(), self.scale5_denoise_thr.get(), self.scale6_denoise_thr.get()]))
         
         self.images["Processed"] = AstroImage(self.stretch_option_current, self.saturation)
         self.images["Processed"].set_from_array(self.multiscale_img.recompose_image())

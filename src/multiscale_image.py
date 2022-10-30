@@ -59,6 +59,8 @@ class MultiScaleImage:
         self.img_residual = None
         self.num_scales = num_scales
         self.detail_boost = np.ones(num_scales)
+        self.denoise_amount = np.ones(num_scales)
+        self.denoise_threshold = np.ones(num_scales)
 
     def set_scales(self, img_scales):
         self.img_scales = img_scales
@@ -68,6 +70,13 @@ class MultiScaleImage:
 
     def set_detail_boost(self, detail_boost):
         self.detail_boost = detail_boost
+
+    def set_denoise_amount(self, denoise_amount):
+        self.denoise_amount = denoise_amount
+
+    def set_denoise_threshold(self, denoise_threshold):
+        self.denoise_threshold = denoise_threshold
+
 
     @staticmethod
     def decompose_image(img_orig, num_scales):
@@ -115,10 +124,13 @@ class MultiScaleImage:
     def recompose_image(self):
         logging.info("Recompose image")
         img_processed = np.copy(self.img_residual)
+        
+        num_colors = self.img_scales.shape[3]
 
         for i in range(self.num_scales):
-            logging.info("Add layer {} with detail factor {}".format(i, self.detail_boost[i]))
-            img_processed = img_processed + self.detail_boost[i] * self.img_scales[i,:,:,:]
+            for color_channel in range(num_colors):
+                logging.info("Add layer {} with detail factor {}".format(i, self.detail_boost[i]))
+                img_processed[:,:,color_channel] = img_processed[:,:,color_channel] + self.detail_boost[i] * np.multiply((np.absolute(self.img_scales[i,:,:,color_channel]) < self.denoise_threshold[i]) * (1 - self.denoise_amount[i]), self.img_scales[i,:,:,color_channel])
 
         return img_processed
 
