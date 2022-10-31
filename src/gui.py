@@ -831,7 +831,6 @@ class Application(tk.Frame):
         self.scale6_show_button.grid(column=0, row=16, pady=(5*scal,30*scal), padx=15*scal, sticky="news")
         tt_show_scale6 = tooltip.Tooltip(self.scale6_show_button, text=tooltip.show_scale_text)
 
-
         #---Load default values---
         self.default_val_button = ttk.Button(self.sharp_menu.sub_frame, 
                          text=_("Set default values"),
@@ -1163,60 +1162,43 @@ class Application(tk.Frame):
         default_prefs = get_default_prefs()
 
         self.scale1_detail.set(default_prefs["scale1_detail"])
-        self.scale1_detail_slider["var"] = default_prefs["scale1_detail"]
+        self.scale1_detail_slider.set(default_prefs["scale1_detail"])
         self.scale1_detail_text.configure(text=_("Detail Enhancement") + ": {:.1f}".format(default_prefs["scale1_detail"]))
         self.scale2_detail.set(default_prefs["scale2_detail"])
-        self.scale2_detail_slider["var"] = default_prefs["scale2_detail"]
         self.scale2_detail_text.configure(text=_("Detail Enhancement") + ": {:.1f}".format(default_prefs["scale2_detail"]))
         self.scale3_detail.set(default_prefs["scale3_detail"])
-        self.scale3_detail_slider["var"] = default_prefs["scale3_detail"]
         self.scale3_detail_text.configure(text=_("Detail Enhancement") + ": {:.1f}".format(default_prefs["scale3_detail"]))
         self.scale4_detail.set(default_prefs["scale4_detail"])
-        self.scale4_detail_slider["var"] = default_prefs["scale4_detail"]
         self.scale4_detail_text.configure(text=_("Detail Enhancement") + ": {:.1f}".format(default_prefs["scale4_detail"]))
         self.scale5_detail.set(default_prefs["scale5_detail"])
-        self.scale5_detail_slider["var"] = default_prefs["scale5_detail"]
         self.scale5_detail_text.configure(text=_("Detail Enhancement") + ": {:.1f}".format(default_prefs["scale5_detail"]))
         self.scale6_detail.set(default_prefs["scale6_detail"])
-        self.scale6_detail_slider["var"] = default_prefs["scale6_detail"]
         self.scale6_detail_text.configure(text=_("Detail Enhancement") + ": {:.1f}".format(default_prefs["scale6_detail"]))
 
         self.scale1_denoise_amount.set(default_prefs["scale1_denoise_amount"])
-        self.scale1_denoise_amount_slider["var"] = default_prefs["scale1_denoise_amount"]
         self.scale1_denoise_amount_text.configure(text=_("Denoise amount") + ": {:.2f}".format(default_prefs["scale1_denoise_amount"]))
         self.scale2_denoise_amount.set(default_prefs["scale2_denoise_amount"])
-        self.scale2_denoise_amount_slider["var"] = default_prefs["scale2_denoise_amount"]
         self.scale2_denoise_amount_text.configure(text=_("Denoise amount") + ": {:.2f}".format(default_prefs["scale2_denoise_amount"]))
         self.scale3_denoise_amount.set(default_prefs["scale3_denoise_amount"])
-        self.scale3_denoise_amount_slider["var"] = default_prefs["scale3_denoise_amount"]
         self.scale3_denoise_amount_text.configure(text=_("Denoise amount") + ": {:.2f}".format(default_prefs["scale3_denoise_amount"]))
         self.scale4_denoise_amount.set(default_prefs["scale4_denoise_amount"])
-        self.scale4_denoise_amount_slider["var"] = default_prefs["scale4_denoise_amount"]
         self.scale4_denoise_amount_text.configure(text=_("Denoise amount") + ": {:.2f}".format(default_prefs["scale4_denoise_amount"]))
         self.scale5_denoise_amount.set(default_prefs["scale5_denoise_amount"])
-        self.scale5_denoise_amount_slider["var"] = default_prefs["scale5_denoise_amount"]
         self.scale5_denoise_amount_text.configure(text=_("Denoise amount") + ": {:.2f}".format(default_prefs["scale5_denoise_amount"]))
         self.scale6_denoise_amount.set(default_prefs["scale6_denoise_amount"])
-        self.scale6_denoise_amount_slider["var"] = default_prefs["scale6_denoise_amount"]
         self.scale6_denoise_amount_text.configure(text=_("Denoise amount") + ": {:.2f}".format(default_prefs["scale6_denoise_amount"]))
 
         self.scale1_denoise_thr.set(default_prefs["scale1_denoise_thr"])
-        self.scale1_denoise_thr_slider["var"] = default_prefs["scale1_denoise_thr"]
         self.scale1_denoise_thr_text.configure(text=_("Denoise detail threshold") + ": {:.3f}".format(default_prefs["scale1_denoise_thr"]))
         self.scale2_denoise_thr.set(default_prefs["scale2_denoise_thr"])
-        self.scale2_denoise_thr_slider["var"] = default_prefs["scale2_denoise_thr"]
         self.scale2_denoise_thr_text.configure(text=_("Denoise detail threshold") + ": {:.3f}".format(default_prefs["scale2_denoise_thr"]))
         self.scale3_denoise_thr.set(default_prefs["scale3_denoise_thr"])
-        self.scale3_denoise_thr_slider["var"] = default_prefs["scale3_denoise_thr"]
         self.scale3_denoise_thr_text.configure(text=_("Denoise detail threshold") + ": {:.3f}".format(default_prefs["scale3_denoise_thr"]))
         self.scale4_denoise_thr.set(default_prefs["scale4_denoise_thr"])
-        self.scale4_denoise_thr_slider["var"] = default_prefs["scale4_denoise_thr"]
         self.scale4_denoise_thr_text.configure(text=_("Denoise detail threshold") + ": {:.3f}".format(default_prefs["scale4_denoise_thr"]))
         self.scale5_denoise_thr.set(default_prefs["scale5_denoise_thr"])
-        self.scale5_denoise_thr_slider["var"] = default_prefs["scale5_denoise_thr"]
         self.scale5_denoise_thr_text.configure(text=_("Denoise detail threshold") + ": {:.3f}".format(default_prefs["scale5_denoise_thr"]))
         self.scale6_denoise_thr.set(default_prefs["scale6_denoise_thr"])
-        self.scale6_denoise_thr_slider["var"] = default_prefs["scale6_denoise_thr"]
         self.scale6_denoise_thr_text.configure(text=_("Denoise detail threshold") + ": {:.3f}".format(default_prefs["scale6_denoise_thr"]))
         
     
