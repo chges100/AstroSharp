@@ -17,6 +17,24 @@ class Prefs(TypedDict):
     saveas_option: AnyStr
     sample_color: int
     lang: AnyStr
+    scale1_detail: float
+    scale1_denoise_amount: float
+    scale1_denoise_thr: float
+    scale2_detail: float
+    scale2_denoise_amount: float
+    scale2_denoise_thr: float
+    scale3_detail: float
+    scale3_denoise_amount: float
+    scale3_denoise_thr: float
+    scale4_detail: float
+    scale4_denoise_amount: float
+    scale4_denoise_thr: float
+    scale5_detail: float
+    scale5_denoise_amount: float
+    scale5_denoise_thr: float
+    scale6_detail: float
+    scale6_denoise_amount: float
+    scale6_denoise_thr: float
 
 DEFAULT_PREFS: Prefs = {
     "working_dir": os.getcwd(),
@@ -26,8 +44,29 @@ DEFAULT_PREFS: Prefs = {
     "saturation": 1.0,
     "saveas_option": "32 bit Tiff",
     "sample_color": 55,
-    "lang": None
+    "lang": None,
+    "scale1_detail": 1.0,
+    "scale1_denoise_amount": 0.0,
+    "scale1_denoise_thr": 0.05,
+    "scale2_detail": 1.0,
+    "scale2_denoise_amount": 0.0,
+    "scale2_denoise_thr": 0.05,
+    "scale3_detail": 1.0,
+    "scale3_denoise_amount": 0.0,
+    "scale3_denoise_thr": 0.05,
+    "scale4_detail": 1.0,
+    "scale4_denoise_amount": 0.0,
+    "scale4_denoise_thr": 0.05,
+    "scale5_detail": 1.0,
+    "scale5_denoise_amount": 0.0,
+    "scale5_denoise_thr": 0.05,
+    "scale6_detail": 1.0,
+    "scale6_denoise_amount": 0.0,
+    "scale6_denoise_thr": 0.05,
 }
+
+def get_default_prefs() -> Prefs:
+    return DEFAULT_PREFS
 
 
 def merge_json(prefs: Prefs, json) -> Prefs:
@@ -47,11 +86,47 @@ def merge_json(prefs: Prefs, json) -> Prefs:
         prefs["sample_color"] = json["sample_color"]
     if "lang" in json:
         prefs["lang"] = json["lang"]
+    if "scale1_detail" in json:
+        prefs["scale1_detail"] = json["scale1_detail"]
+    if "scale1_denoise_amount" in json:
+        prefs["scale1_denoise_amount"] = json["scale1_denoise_amount"]
+    if "scale1_denoise_thr" in json:
+        prefs["scale1_denoise_thr"] = json["scale1_denoise_thr"]
+    if "scale2_detail" in json:
+        prefs["scale2_detail"] = json["scale2_detail"]
+    if "scale2_denoise_amount" in json:
+        prefs["scale2_denoise_amount"] = json["scale2_denoise_amount"]
+    if "scale2_denoise_thr" in json:
+        prefs["scale2_denoise_thr"] = json["scale2_denoise_thr"]
+    if "scale3_detail" in json:
+        prefs["scale3_detail"] = json["scale3_detail"]
+    if "scale3_denoise_amount" in json:
+        prefs["scale3_denoise_amount"] = json["scale3_denoise_amount"]
+    if "scale3_denoise_thr" in json:
+        prefs["scale3_denoise_thr"] = json["scale3_denoise_thr"]
+    if "scale4_detail" in json:
+        prefs["scale4_detail"] = json["scale4_detail"]
+    if "scale4_denoise_amount" in json:
+        prefs["scale4_denoise_amount"] = json["scale4_denoise_amount"]
+    if "scale4_denoise_thr" in json:
+        prefs["scale4_denoise_thr"] = json["scale4_denoise_thr"]
+    if "scale5_detail" in json:
+        prefs["scale5_detail"] = json["scale5_detail"]
+    if "scale5_denoise_amount" in json:
+        prefs["scale5_denoise_amount"] = json["scale5_denoise_amount"]
+    if "scale5_denoise_thr" in json:
+        prefs["scale5_denoise_thr"] = json["scale5_denoise_thr"]
+    if "scale6_detail" in json:
+        prefs["scale6_detail"] = json["scale6_detail"]
+    if "scale6_denoise_amount" in json:
+        prefs["scale6_denoise_amount"] = json["scale6_denoise_amount"]
+    if "scale6_denoise_thr" in json:
+        prefs["scale6_denoise_thr"] = json["scale6_denoise_thr"]
     return prefs
 
 
 def load_preferences(prefs_filename) -> Prefs:
-    prefs = DEFAULT_PREFS
+    prefs = DEFAULT_PREFS.copy()
     try:
         if os.path.isfile(prefs_filename):
             with open(prefs_filename) as f:

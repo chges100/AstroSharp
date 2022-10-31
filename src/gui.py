@@ -34,7 +34,7 @@ from help_panel import Help_Panel
 from loadingframe import LoadingFrame
 from localization import _
 from parallel_processing import executor
-from preferences import (load_preferences, save_preferences)
+from preferences import (get_default_prefs, load_preferences, save_preferences)
 from stretch import stretch_all
 from ui_scaling import get_scaling_factor
 
@@ -193,7 +193,7 @@ class Application(tk.Frame):
         self.sharp_menu.grid(column=0, row=1, pady=(20*scal,5*scal), padx=15*scal, sticky="news")
         self.sharp_menu.sub_frame.grid_columnconfigure(0, weight=1)
         
-        for i in range(19):
+        for i in range(20):
             self.sharp_menu.sub_frame.grid_rowconfigure(i, weight=1)
         
         #---Open Image---
@@ -281,6 +281,8 @@ class Application(tk.Frame):
 
         self.scale1_detail = tk.DoubleVar()
         self.scale1_detail.set(1.0)
+        if "scale1_detail" in self.prefs:
+            self.scale1_detail.set(self.prefs["scale1_detail"])
 
         self.scale1_detail_text = tk.Message(self.scale1_menu.sub_frame, text=_("Detail Enhancement") + ": {:.1f}".format(self.scale1_detail.get()))
         self.scale1_detail_text.config(width=500 * scal)
@@ -305,6 +307,8 @@ class Application(tk.Frame):
 
         self.scale1_denoise_thr = tk.DoubleVar()
         self.scale1_denoise_thr.set(0.05)
+        if "scale1_denoise_thr" in self.prefs:
+            self.scale1_denoise_thr.set(self.prefs["scale1_denoise_thr"])
 
         self.scale1_denoise_thr_text = tk.Message(self.scale1_menu.sub_frame, text=_("Denoise detail threshold") + ": {:.3f}".format(self.scale1_denoise_thr.get()))
         self.scale1_denoise_thr_text.config(width=500 * scal)
@@ -329,6 +333,8 @@ class Application(tk.Frame):
 
         self.scale1_denoise_amount = tk.DoubleVar()
         self.scale1_denoise_amount.set(0.0)
+        if "scale1_denoise_amount" in self.prefs:
+            self.scale1_denoise_amount.set(self.prefs["scale1_denoise_amount"])
 
         self.scale1_denoise_amount_text = tk.Message(self.scale1_menu.sub_frame, text=_("Denoise amount") + ": {:.2f}".format(self.scale1_denoise_amount.get()))
         self.scale1_denoise_amount_text.config(width=500 * scal)
@@ -369,6 +375,8 @@ class Application(tk.Frame):
 
         self.scale2_detail = tk.DoubleVar()
         self.scale2_detail.set(1.0)
+        if "scale2_detail" in self.prefs:
+            self.scale2_detail.set(self.prefs["scale2_detail"])
 
         self.scale2_detail_text = tk.Message(self.scale2_menu.sub_frame, text=_("Detail Enhancement") + ": {:.1f}".format(self.scale2_detail.get()))
         self.scale2_detail_text.config(width=500 * scal)
@@ -393,6 +401,8 @@ class Application(tk.Frame):
 
         self.scale2_denoise_thr = tk.DoubleVar()
         self.scale2_denoise_thr.set(0.05)
+        if "scale2_denoise_thr" in self.prefs:
+            self.scale2_denoise_thr.set(self.prefs["scale2_denoise_thr"])
 
         self.scale2_denoise_thr_text = tk.Message(self.scale2_menu.sub_frame, text=_("Denoise detail threshold") + ": {:.3f}".format(self.scale2_denoise_thr.get()))
         self.scale2_denoise_thr_text.config(width=500 * scal)
@@ -417,6 +427,8 @@ class Application(tk.Frame):
 
         self.scale2_denoise_amount = tk.DoubleVar()
         self.scale2_denoise_amount.set(0.0)
+        if "scale2_denoise_amount" in self.prefs:
+            self.scale2_denoise_amount.set(self.prefs["scale2_denoise_amount"])
 
         self.scale2_denoise_amount_text = tk.Message(self.scale2_menu.sub_frame, text=_("Denoise amount") + ": {:.2f}".format(self.scale2_denoise_amount.get()))
         self.scale2_denoise_amount_text.config(width=500 * scal)
@@ -457,6 +469,8 @@ class Application(tk.Frame):
 
         self.scale3_detail = tk.DoubleVar()
         self.scale3_detail.set(1.0)
+        if "scale3_detail" in self.prefs:
+            self.scale3_detail.set(self.prefs["scale3_detail"])
 
         self.scale3_detail_text = tk.Message(self.scale3_menu.sub_frame, text=_("Detail Enhancement") + ": {:.1f}".format(self.scale3_detail.get()))
         self.scale3_detail_text.config(width=500 * scal)
@@ -481,6 +495,8 @@ class Application(tk.Frame):
 
         self.scale3_denoise_thr = tk.DoubleVar()
         self.scale3_denoise_thr.set(0.05)
+        if "scale3_denoise_thr" in self.prefs:
+            self.scale3_denoise_thr.set(self.prefs["scale3_denoise_thr"])
 
         self.scale3_denoise_thr_text = tk.Message(self.scale3_menu.sub_frame, text=_("Denoise detail threshold") + ": {:.3f}".format(self.scale3_denoise_thr.get()))
         self.scale3_denoise_thr_text.config(width=500 * scal)
@@ -505,6 +521,8 @@ class Application(tk.Frame):
 
         self.scale3_denoise_amount = tk.DoubleVar()
         self.scale3_denoise_amount.set(0.0)
+        if "scale3_denoise_amount" in self.prefs:
+            self.scale3_denoise_amount.set(self.prefs["scale3_denoise_amount"])
 
         self.scale3_denoise_amount_text = tk.Message(self.scale3_menu.sub_frame, text=_("Denoise amount") + ": {:.2f}".format(self.scale3_denoise_amount.get()))
         self.scale3_denoise_amount_text.config(width=500 * scal)
@@ -545,6 +563,8 @@ class Application(tk.Frame):
 
         self.scale4_detail = tk.DoubleVar()
         self.scale4_detail.set(1.0)
+        if "scale4_detail" in self.prefs:
+            self.scale4_detail.set(self.prefs["scale4_detail"])
 
         self.scale4_detail_text = tk.Message(self.scale4_menu.sub_frame, text=_("Detail Enhancement") + ": {:.1f}".format(self.scale4_detail.get()))
         self.scale4_detail_text.config(width=500 * scal)
@@ -569,6 +589,8 @@ class Application(tk.Frame):
 
         self.scale4_denoise_thr = tk.DoubleVar()
         self.scale4_denoise_thr.set(0.05)
+        if "scale4_denoise_thr" in self.prefs:
+            self.scale4_denoise_thr.set(self.prefs["scale4_denoise_thr"])
 
         self.scale4_denoise_thr_text = tk.Message(self.scale4_menu.sub_frame, text=_("Denoise detail threshold") + ": {:.3f}".format(self.scale4_denoise_thr.get()))
         self.scale4_denoise_thr_text.config(width=500 * scal)
@@ -593,6 +615,8 @@ class Application(tk.Frame):
 
         self.scale4_denoise_amount = tk.DoubleVar()
         self.scale4_denoise_amount.set(0.0)
+        if "scale4_denoise_amount" in self.prefs:
+            self.scale4_denoise_amount.set(self.prefs["scale4_denoise_amount"])
 
         self.scale4_denoise_amount_text = tk.Message(self.scale4_menu.sub_frame, text=_("Denoise amount") + ": {:.2f}".format(self.scale4_denoise_amount.get()))
         self.scale4_denoise_amount_text.config(width=500 * scal)
@@ -633,6 +657,8 @@ class Application(tk.Frame):
 
         self.scale5_detail = tk.DoubleVar()
         self.scale5_detail.set(1.0)
+        if "scale5_detail" in self.prefs:
+            self.scale5_detail.set(self.prefs["scale5_detail"])
 
         self.scale5_detail_text = tk.Message(self.scale5_menu.sub_frame, text=_("Detail Enhancement") + ": {:.1f}".format(self.scale5_detail.get()))
         self.scale5_detail_text.config(width=500 * scal)
@@ -657,6 +683,8 @@ class Application(tk.Frame):
 
         self.scale5_denoise_thr = tk.DoubleVar()
         self.scale5_denoise_thr.set(0.05)
+        if "scale5_denoise_thr" in self.prefs:
+            self.scale5_denoise_thr.set(self.prefs["scale5_denoise_thr"])
 
         self.scale5_denoise_thr_text = tk.Message(self.scale5_menu.sub_frame, text=_("Denoise detail threshold") + ": {:.3f}".format(self.scale5_denoise_thr.get()))
         self.scale5_denoise_thr_text.config(width=500 * scal)
@@ -681,6 +709,8 @@ class Application(tk.Frame):
 
         self.scale5_denoise_amount = tk.DoubleVar()
         self.scale5_denoise_amount.set(0.0)
+        if "scale5_denoise_amount" in self.prefs:
+            self.scale5_denoise_amount.set(self.prefs["scale5_denoise_amount"])
 
         self.scale5_denoise_amount_text = tk.Message(self.scale5_menu.sub_frame, text=_("Denoise amount") + ": {:.2f}".format(self.scale5_denoise_amount.get()))
         self.scale5_denoise_amount_text.config(width=500 * scal)
@@ -721,6 +751,8 @@ class Application(tk.Frame):
 
         self.scale6_detail = tk.DoubleVar()
         self.scale6_detail.set(1.0)
+        if "scale6_detail" in self.prefs:
+            self.scale6_detail.set(self.prefs["scale6_detail"])
 
         self.scale6_detail_text = tk.Message(self.scale6_menu.sub_frame, text=_("Detail Enhancement") + ": {:.1f}".format(self.scale6_detail.get()))
         self.scale6_detail_text.config(width=500 * scal)
@@ -745,6 +777,8 @@ class Application(tk.Frame):
 
         self.scale6_denoise_thr = tk.DoubleVar()
         self.scale6_denoise_thr.set(0.05)
+        if "scale6_denoise_thr" in self.prefs:
+            self.scale6_denoise_thr.set(self.prefs["scale6_denoise_thr"])
 
         self.scale6_denoise_thr_text = tk.Message(self.scale6_menu.sub_frame, text=_("Denoise detail threshold") + ": {:.3f}".format(self.scale6_denoise_thr.get()))
         self.scale6_denoise_thr_text.config(width=500 * scal)
@@ -769,6 +803,8 @@ class Application(tk.Frame):
 
         self.scale6_denoise_amount = tk.DoubleVar()
         self.scale6_denoise_amount.set(0.0)
+        if "scale6_denoise_amount" in self.prefs:
+            self.scale6_denoise_amount.set(self.prefs["scale6_denoise_amount"])
 
         self.scale6_denoise_amount_text = tk.Message(self.scale6_menu.sub_frame, text=_("Denoise amount") + ": {:.2f}".format(self.scale6_denoise_amount.get()))
         self.scale6_denoise_amount_text.config(width=500 * scal)
@@ -796,27 +832,34 @@ class Application(tk.Frame):
                          command=self.show_scale6)
         self.scale6_show_button.grid(column=0, row=16, pady=(5*scal,30*scal), padx=15*scal, sticky="news")
         tt_show_scale6 = tooltip.Tooltip(self.scale6_show_button, text=tooltip.calculate_text)
-        
+
+
+        #---Load default values---
+        self.default_val_button = ttk.Button(self.sharp_menu.sub_frame, 
+                         text=_("Set default values"),
+                         command=self.set_default_values)
+        self.default_val_button.grid(column=0, row=15, pady=(5*scal,30*scal), padx=15*scal, sticky="news")
+        tt_calculate= tooltip.Tooltip(self.default_val_button, text=tooltip.calculate_text)
         
         
         #---Calculation---
         num_pic = ImageTk.PhotoImage(file=resource_path("img/gfx_number_4-scaled.png"))
         text = tk.Label(self.sharp_menu.sub_frame, text=_(" Process Image"), image=num_pic, font=heading_font, compound="left")
         text.image = num_pic
-        text.grid(column=0, row=15, pady=5*scal, padx=0, sticky="w")
+        text.grid(column=0, row=16, pady=5*scal, padx=0, sticky="w")
         
         
         self.calculate_button = ttk.Button(self.sharp_menu.sub_frame, 
                          text=_("Process Image"),
                          command=self.calculate)
-        self.calculate_button.grid(column=0, row=16, pady=(5*scal,30*scal), padx=15*scal, sticky="news")
+        self.calculate_button.grid(column=0, row=17, pady=(5*scal,30*scal), padx=15*scal, sticky="news")
         tt_calculate= tooltip.Tooltip(self.calculate_button, text=tooltip.calculate_text)
         
         #---Saving---  
         num_pic = ImageTk.PhotoImage(file=resource_path("img/gfx_number_5-scaled.png"))
         self.saveas_text = tk.Label(self.sharp_menu.sub_frame, text=_(" Saving"), image=num_pic, font=heading_font, compound="left")
         self.saveas_text.image = num_pic
-        self.saveas_text.grid(column=0, row=17, pady=5*scal, padx=0, sticky="w")
+        self.saveas_text.grid(column=0, row=18, pady=5*scal, padx=0, sticky="w")
         
         self.saveas_options = ["16 bit Tiff", "32 bit Tiff", "16 bit Fits", "32 bit Fits", "16 bit XISF", "32 bit XISF"]
         self.saveas_type = tk.StringVar()
@@ -824,14 +867,14 @@ class Application(tk.Frame):
         if "saveas_option" in self.prefs:
             self.saveas_type.set(self.prefs["saveas_option"])
         self.saveas_menu = ttk.OptionMenu(self.sharp_menu.sub_frame, self.saveas_type, self.saveas_type.get(), *self.saveas_options)
-        self.saveas_menu.grid(column=0, row=18, pady=(5*scal,20*scal), padx=15*scal, sticky="news")
+        self.saveas_menu.grid(column=0, row=19, pady=(5*scal,20*scal), padx=15*scal, sticky="news")
         tt_interpol_type= tooltip.Tooltip(self.saveas_menu, text=tooltip.saveas_text)
               
         
         self.save_button = ttk.Button(self.sharp_menu.sub_frame, 
                          text=_("Save Processed"),
                          command=self.save_image)
-        self.save_button.grid(column=0, row=19, pady=(5*scal,10*scal), padx=15*scal, sticky="news")
+        self.save_button.grid(column=0, row=20, pady=(5*scal,10*scal), padx=15*scal, sticky="news")
         tt_save_pic= tooltip.Tooltip(self.save_button, text=tooltip.save_pic_text)
         
 
@@ -951,6 +994,7 @@ class Application(tk.Frame):
             self.preview_mode = True
 
         self.preview_select_mode = False
+        self.multiscale_img = None
         self.zoom_fit(self.images[self.display_type.get()].width, self.images[self.display_type.get()].height)
         self.redraw_image()
         self.redraw_preview_rect()
@@ -1097,6 +1141,10 @@ class Application(tk.Frame):
         return
 
     def show_scale(self, num):
+        if self.multiscale_img is None:
+            messagebox.showerror("Error", _("Please extract scales first."))
+            return
+        
         self.scale_img_to_show.set_from_array(self.multiscale_img.img_scales[num-1,:,:,:])
         self.scale_img_to_show.is_scale_preview = True
         self.scale_img_to_show.update_display()
@@ -1112,6 +1160,66 @@ class Application(tk.Frame):
     def enter_key(self,enter):
         
         self.calculate()
+
+    def set_default_values(self):
+        default_prefs = get_default_prefs()
+
+        self.scale1_detail.set(default_prefs["scale1_detail"])
+        self.scale1_detail_slider["var"] = default_prefs["scale1_detail"]
+        self.scale1_detail_text.configure(text=_("Detail Enhancement") + ": {:.1f}".format(default_prefs["scale1_detail"]))
+        self.scale2_detail.set(default_prefs["scale2_detail"])
+        self.scale2_detail_slider["var"] = default_prefs["scale2_detail"]
+        self.scale2_detail_text.configure(text=_("Detail Enhancement") + ": {:.1f}".format(default_prefs["scale2_detail"]))
+        self.scale3_detail.set(default_prefs["scale3_detail"])
+        self.scale3_detail_slider["var"] = default_prefs["scale3_detail"]
+        self.scale3_detail_text.configure(text=_("Detail Enhancement") + ": {:.1f}".format(default_prefs["scale3_detail"]))
+        self.scale4_detail.set(default_prefs["scale4_detail"])
+        self.scale4_detail_slider["var"] = default_prefs["scale4_detail"]
+        self.scale4_detail_text.configure(text=_("Detail Enhancement") + ": {:.1f}".format(default_prefs["scale4_detail"]))
+        self.scale5_detail.set(default_prefs["scale5_detail"])
+        self.scale5_detail_slider["var"] = default_prefs["scale5_detail"]
+        self.scale5_detail_text.configure(text=_("Detail Enhancement") + ": {:.1f}".format(default_prefs["scale5_detail"]))
+        self.scale6_detail.set(default_prefs["scale6_detail"])
+        self.scale6_detail_slider["var"] = default_prefs["scale6_detail"]
+        self.scale6_detail_text.configure(text=_("Detail Enhancement") + ": {:.1f}".format(default_prefs["scale6_detail"]))
+
+        self.scale1_denoise_amount.set(default_prefs["scale1_denoise_amount"])
+        self.scale1_denoise_amount_slider["var"] = default_prefs["scale1_denoise_amount"]
+        self.scale1_denoise_amount_text.configure(text=_("Denoise amount") + ": {:.2f}".format(default_prefs["scale1_denoise_amount"]))
+        self.scale2_denoise_amount.set(default_prefs["scale2_denoise_amount"])
+        self.scale2_denoise_amount_slider["var"] = default_prefs["scale2_denoise_amount"]
+        self.scale2_denoise_amount_text.configure(text=_("Denoise amount") + ": {:.2f}".format(default_prefs["scale2_denoise_amount"]))
+        self.scale3_denoise_amount.set(default_prefs["scale3_denoise_amount"])
+        self.scale3_denoise_amount_slider["var"] = default_prefs["scale3_denoise_amount"]
+        self.scale3_denoise_amount_text.configure(text=_("Denoise amount") + ": {:.2f}".format(default_prefs["scale3_denoise_amount"]))
+        self.scale4_denoise_amount.set(default_prefs["scale4_denoise_amount"])
+        self.scale4_denoise_amount_slider["var"] = default_prefs["scale4_denoise_amount"]
+        self.scale4_denoise_amount_text.configure(text=_("Denoise amount") + ": {:.2f}".format(default_prefs["scale4_denoise_amount"]))
+        self.scale5_denoise_amount.set(default_prefs["scale5_denoise_amount"])
+        self.scale5_denoise_amount_slider["var"] = default_prefs["scale5_denoise_amount"]
+        self.scale5_denoise_amount_text.configure(text=_("Denoise amount") + ": {:.2f}".format(default_prefs["scale5_denoise_amount"]))
+        self.scale6_denoise_amount.set(default_prefs["scale6_denoise_amount"])
+        self.scale6_denoise_amount_slider["var"] = default_prefs["scale6_denoise_amount"]
+        self.scale6_denoise_amount_text.configure(text=_("Denoise amount") + ": {:.2f}".format(default_prefs["scale6_denoise_amount"]))
+
+        self.scale1_denoise_thr.set(default_prefs["scale1_denoise_thr"])
+        self.scale1_denoise_thr_slider["var"] = default_prefs["scale1_denoise_thr"]
+        self.scale1_denoise_thr_text.configure(text=_("Denoise detail threshold") + ": {:.3f}".format(default_prefs["scale1_denoise_thr"]))
+        self.scale2_denoise_thr.set(default_prefs["scale2_denoise_thr"])
+        self.scale2_denoise_thr_slider["var"] = default_prefs["scale2_denoise_thr"]
+        self.scale2_denoise_thr_text.configure(text=_("Denoise detail threshold") + ": {:.3f}".format(default_prefs["scale2_denoise_thr"]))
+        self.scale3_denoise_thr.set(default_prefs["scale3_denoise_thr"])
+        self.scale3_denoise_thr_slider["var"] = default_prefs["scale3_denoise_thr"]
+        self.scale3_denoise_thr_text.configure(text=_("Denoise detail threshold") + ": {:.3f}".format(default_prefs["scale3_denoise_thr"]))
+        self.scale4_denoise_thr.set(default_prefs["scale4_denoise_thr"])
+        self.scale4_denoise_thr_slider["var"] = default_prefs["scale4_denoise_thr"]
+        self.scale4_denoise_thr_text.configure(text=_("Denoise detail threshold") + ": {:.3f}".format(default_prefs["scale4_denoise_thr"]))
+        self.scale5_denoise_thr.set(default_prefs["scale5_denoise_thr"])
+        self.scale5_denoise_thr_slider["var"] = default_prefs["scale5_denoise_thr"]
+        self.scale5_denoise_thr_text.configure(text=_("Denoise detail threshold") + ": {:.3f}".format(default_prefs["scale5_denoise_thr"]))
+        self.scale6_denoise_thr.set(default_prefs["scale6_denoise_thr"])
+        self.scale6_denoise_thr_slider["var"] = default_prefs["scale6_denoise_thr"]
+        self.scale6_denoise_thr_text.configure(text=_("Denoise detail threshold") + ": {:.3f}".format(default_prefs["scale6_denoise_thr"]))
         
     
     def mouse_down_left(self,event):
@@ -1440,6 +1548,24 @@ class Application(tk.Frame):
         self.prefs["saturation"] = self.saturation.get()
         self.prefs["saveas_option"] = self.saveas_type.get()
         self.prefs["sample_color"] = self.sample_color.get()
+        self.prefs["scale1_detail"] = self.scale1_detail.get()
+        self.prefs["scale1_denoise_amount"] = self.scale1_denoise_amount.get()
+        self.prefs["scale1_denoise_thr"] = self.scale1_denoise_thr.get()
+        self.prefs["scale2_detail"] = self.scale2_detail.get()
+        self.prefs["scale2_denoise_amount"] = self.scale2_denoise_amount.get()
+        self.prefs["scale2_denoise_thr"] = self.scale2_denoise_thr.get()
+        self.prefs["scale3_detail"] = self.scale3_detail.get()
+        self.prefs["scale3_denoise_amount"] = self.scale3_denoise_amount.get()
+        self.prefs["scale3_denoise_thr"] = self.scale3_denoise_thr.get()
+        self.prefs["scale4_detail"] = self.scale4_detail.get()
+        self.prefs["scale4_denoise_amount"] = self.scale4_denoise_amount.get()
+        self.prefs["scale4_denoise_thr"] = self.scale4_denoise_thr.get()
+        self.prefs["scale5_detail"] = self.scale5_detail.get()
+        self.prefs["scale5_denoise_amount"] = self.scale5_denoise_amount.get()
+        self.prefs["scale5_denoise_thr"] = self.scale5_denoise_thr.get()
+        self.prefs["scale6_detail"] = self.scale6_detail.get()
+        self.prefs["scale6_denoise_amount"] = self.scale6_denoise_amount.get()
+        self.prefs["scale6_denoise_thr"] = self.scale6_denoise_thr.get()
         #self.prefs["lang"] = self.lang.get()
         prefs_filename = os.path.join(user_config_dir(appname="AstroSharp"), "preferences.json")
         save_preferences(prefs_filename, self.prefs)
