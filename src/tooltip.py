@@ -159,35 +159,22 @@ load_text = _("Load your image you would like to correct. \n"
 stretch_text = _("Automatically stretch the picture to make gradients more visible. "
                 "The saved pictures are unaffected by the stretch.")
 
-reset_text = _("Reset all the chosen background points.")
 
-bg_select_text = _("Creates a grid with the specified amount of points per row "
-                  "and rejects points below a threshold defined by the tolerance.")
+calculate_text = _("Apply the changes made to each scale of the original image and process result to new image.")
 
-bg_tol_text = _("The tolerance adjusts the threshold for rejection of background points " 
-               "with automatic background selection")
+extract_text = _("Extract different scales from image or preview. Small scales show small structures, larger scales show larger structures. Has to be done for preview and original image seperatly.")
 
-num_points_text = _("Adjust the number of points per row for the grid created by"
-                   " automatic background selection.")
+show_scale_text = _("Show a preview of the selected scale in order to estimate, which structures and details are included. Changes made to the sliders do not affect this preview.")
 
-interpol_type_text = _("Choose between different interpolation methods.")
-
-smoothing_text = _("Adjust the smoothing parameter for the interpolation method. "
-                  "A too small smoothing parameter may lead to over- and undershooting "
-                  "inbetween background points, while a too large smoothing parameter "
-                  "may not be suited for large deviations in gradients.")
-
-calculate_text = _("Use the specified interpolation method to calculate a background model "
-                  "and subtract it from the picture. This may take a while.")
+load_default_val_text = _("Load default values for all sliders. Using this setting for processing gives the original image as result.")
 
 saveas_text = _("Choose the bitdepth of the saved pictures and the file format. "
                "If you are working with a .fits image the fits header will "
                "be preserved.")
-save_bg_text = _("Save the background model")
 save_pic_text = _("Save the processed picture")
 
 display_text = _("Switch display between \n"
                 "\n"
                 "Original: Your original picture \n"
                 "Processed: Picture with subtracted background model \n"
-                "Background: The background model") 
+                "Scale: Preview one selected scale of original image") 

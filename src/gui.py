@@ -261,19 +261,17 @@ class Application(tk.Frame):
                          text=_("Extract Scales"),
                          command=self.extract)
         self.extract_button.grid(column=0, row=7, pady=(5*scal,30*scal), padx=15*scal, sticky="news")
-        tt_calculate= tooltip.Tooltip(self.extract_button, text=tooltip.calculate_text)
+        tt_calculate= tooltip.Tooltip(self.extract_button, text=tooltip.extract_text)
 
         #---Scales editor---
-        num_pic = ImageTk.PhotoImage(file=resource_path("img/gfx_number_3-scaled.png"))
-        text = tk.Label(self.sharp_menu.sub_frame, text=_(" Adjust Scales"), image=num_pic, font=heading_font, compound="left")
-        text.image = num_pic
-        text.grid(column=0, row=8, pady=5*scal, padx=0, sticky="w")
+        text = tk.Label(self.sharp_menu.sub_frame, text=_(" Adjust Scales"), font=heading_font, compound="left")
+        text.grid(column=0, row=8, pady=5*scal, padx=5*scal, sticky="w")
 
 
         #---Scale 1 menu---
 
         self.scale1_menu = CollapsibleFrame(self.sharp_menu.sub_frame, text=_("Scale 1") + " ", nested=True)
-        self.scale1_menu.grid(column=0, row=9, pady=(5*scal,20*scal), padx=15*scal, sticky="news")
+        self.scale1_menu.grid(column=0, row=9, pady=(10*scal,20*scal), padx=15*scal, sticky="news")
         self.scale1_menu.sub_frame.grid_columnconfigure(0, weight=1)
 
         for i in range(7):
@@ -361,7 +359,7 @@ class Application(tk.Frame):
                          text=_("Show Scale"),
                          command=self.show_scale1)
         self.scale1_show_button.grid(column=0, row=16, pady=(5*scal,30*scal), padx=15*scal, sticky="news")
-        tt_show_scale1 = tooltip.Tooltip(self.scale1_show_button, text=tooltip.calculate_text)
+        tt_show_scale1 = tooltip.Tooltip(self.scale1_show_button, text=tooltip.show_scale_text)
 
 
         #---Scale 2 menu---
@@ -455,7 +453,7 @@ class Application(tk.Frame):
                          text=_("Show Scale"),
                          command=self.show_scale2)
         self.scale2_show_button.grid(column=0, row=16, pady=(5*scal,30*scal), padx=15*scal, sticky="news")
-        tt_show_scale2 = tooltip.Tooltip(self.scale2_show_button, text=tooltip.calculate_text)
+        tt_show_scale2 = tooltip.Tooltip(self.scale2_show_button, text=tooltip.show_scale_text)
 
 
         #---Scale 3 menu---
@@ -549,7 +547,7 @@ class Application(tk.Frame):
                          text=_("Show Scale"),
                          command=self.show_scale3)
         self.scale3_show_button.grid(column=0, row=16, pady=(5*scal,30*scal), padx=15*scal, sticky="news")
-        tt_show_scale3 = tooltip.Tooltip(self.scale3_show_button, text=tooltip.calculate_text)
+        tt_show_scale3 = tooltip.Tooltip(self.scale3_show_button, text=tooltip.show_scale_text)
 
 
         #---Scale 4 menu---
@@ -643,7 +641,7 @@ class Application(tk.Frame):
                          text=_("Show Scale"),
                          command=self.show_scale4)
         self.scale4_show_button.grid(column=0, row=16, pady=(5*scal,30*scal), padx=15*scal, sticky="news")
-        tt_show_scale4 = tooltip.Tooltip(self.scale4_show_button, text=tooltip.calculate_text)
+        tt_show_scale4 = tooltip.Tooltip(self.scale4_show_button, text=tooltip.show_scale_text)
 
 
         #---Scale 5 menu---
@@ -737,7 +735,7 @@ class Application(tk.Frame):
                          text=_("Show Scale"),
                          command=self.show_scale5)
         self.scale5_show_button.grid(column=0, row=16, pady=(5*scal,30*scal), padx=15*scal, sticky="news")
-        tt_show_scale5 = tooltip.Tooltip(self.scale5_show_button, text=tooltip.calculate_text)
+        tt_show_scale5 = tooltip.Tooltip(self.scale5_show_button, text=tooltip.show_scale_text)
 
 
         #---Scale 6 menu---
@@ -831,7 +829,7 @@ class Application(tk.Frame):
                          text=_("Show Scale"),
                          command=self.show_scale6)
         self.scale6_show_button.grid(column=0, row=16, pady=(5*scal,30*scal), padx=15*scal, sticky="news")
-        tt_show_scale6 = tooltip.Tooltip(self.scale6_show_button, text=tooltip.calculate_text)
+        tt_show_scale6 = tooltip.Tooltip(self.scale6_show_button, text=tooltip.show_scale_text)
 
 
         #---Load default values---
@@ -839,7 +837,7 @@ class Application(tk.Frame):
                          text=_("Set default values"),
                          command=self.set_default_values)
         self.default_val_button.grid(column=0, row=15, pady=(5*scal,30*scal), padx=15*scal, sticky="news")
-        tt_calculate= tooltip.Tooltip(self.default_val_button, text=tooltip.calculate_text)
+        tt_calculate= tooltip.Tooltip(self.default_val_button, text=tooltip.load_default_val_text)
         
         
         #---Calculation---
@@ -1040,21 +1038,21 @@ class Application(tk.Frame):
        
        if(self.saveas_type.get() == "16 bit Tiff" or self.saveas_type.get() == "32 bit Tiff"):
            dir = tk.filedialog.asksaveasfilename(
-               initialfile = self.filename + "_GraXpert.tiff",
+               initialfile = self.filename + "_AstroSharp.tiff",
                filetypes = [("Tiff", ".tiff")],
                defaultextension = ".tiff",
                initialdir = self.prefs["working_dir"]
                )         
        elif(self.saveas_type.get() == "16 bit XISF" or self.saveas_type.get() == "32 bit XISF"):       
             dir = tk.filedialog.asksaveasfilename(
-                initialfile = self.filename + "_GraXpert.xisf",
+                initialfile = self.filename + "_AstroSharp.xisf",
                 filetypes = [("XISF", ".xisf")],
                 defaultextension = ".xisf",
                 initialdir = self.prefs["working_dir"]
                 )           
        else:
            dir = tk.filedialog.asksaveasfilename(
-               initialfile = self.filename + "_GraXpert.fits",
+               initialfile = self.filename + "_AstroSharp.fits",
                filetypes = [("Fits", ".fits")],
                defaultextension = ".fits",
                initialdir = self.prefs["working_dir"]

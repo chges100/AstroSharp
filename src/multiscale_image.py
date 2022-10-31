@@ -17,7 +17,7 @@ import astroimage
 
 downsample_threshold_scale = 3
 
-# build up circular masks for median filter
+# build up circular-like masks for median filter
 median_filter_masks = []
 median_filter_masks.append(np.array([[1,1,1],[1,1,1],[1,1,1]]))
 median_filter_masks.append(np.array([[0,1,1,1,0],
@@ -51,6 +51,12 @@ median_filter_masks.append(np.array([[0,0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,0],
                                      [0,0,0,0,1,1,1,1,1,1,1,1,1,0,0,0,0],
                                      [0,0,0,0,0,1,1,1,1,1,1,1,0,0,0,0,0],
                                      [0,0,0,0,0,0,1,1,1,1,1,0,0,0,0,0,0]]))
+
+
+
+
+# Represents an image consisting of different scales (fine to coarse details) and a residual image. Different scales are extracted using a modified median filtering.
+# For details we refer to "Image Processing and Data Analysis - The Multiscale Approach" by J.L. Starck, F. Murtagh and A. Bijaoui.
 
 class MultiScaleImage:
 
