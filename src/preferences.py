@@ -35,6 +35,9 @@ class Prefs(TypedDict):
     scale6_detail: float
     scale6_denoise_amount: float
     scale6_denoise_thr: float
+    scale7_detail: float
+    scale7_denoise_amount: float
+    scale7_denoise_thr: float
 
 DEFAULT_PREFS: Prefs = {
     "working_dir": os.getcwd(),
@@ -63,6 +66,9 @@ DEFAULT_PREFS: Prefs = {
     "scale6_detail": 1.0,
     "scale6_denoise_amount": 0.0,
     "scale6_denoise_thr": 0.05,
+    "scale7_detail": 1.0,
+    "scale7_denoise_amount": 0.0,
+    "scale7_denoise_thr": 0.05,
 }
 
 def get_default_prefs() -> Prefs:
@@ -122,6 +128,12 @@ def merge_json(prefs: Prefs, json) -> Prefs:
         prefs["scale6_denoise_amount"] = json["scale6_denoise_amount"]
     if "scale6_denoise_thr" in json:
         prefs["scale6_denoise_thr"] = json["scale6_denoise_thr"]
+    if "scale7_detail" in json:
+        prefs["scale7_detail"] = json["scale7_detail"]
+    if "scale7_denoise_amount" in json:
+        prefs["scale7_denoise_amount"] = json["scale7_denoise_amount"]
+    if "scale7_denoise_thr" in json:
+        prefs["scale7_denoise_thr"] = json["scale7_denoise_thr"]
     return prefs
 
 
