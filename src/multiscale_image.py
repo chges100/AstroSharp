@@ -13,7 +13,8 @@ from mp_logging import get_logging_queue, worker_configurer
 import numpy as np
 import scipy as sp
 import skimage as sk
-import astroimage
+from PIL import Image
+import cv2
 
 downsample_threshold_scale = 3
 
@@ -65,6 +66,7 @@ class MultiScaleImage:
         self.img_residual = None
         self.num_scales = num_scales
         self.detail_boost = np.ones(num_scales)
+        self.residual_detail_boost = 0.0
         self.denoise_amount = np.zeros(num_scales)
         self.denoise_threshold = np.ones(num_scales)
 
@@ -82,6 +84,9 @@ class MultiScaleImage:
 
     def set_denoise_threshold(self, denoise_threshold):
         self.denoise_threshold = denoise_threshold
+
+    def set_residual_detail_boost(self, detail_boost):
+        self.residual_detail_boost = detail_boost
 
 
     @staticmethod
@@ -130,6 +135,7 @@ class MultiScaleImage:
     def recompose_image(self):
         logging.info("Recompose image")
         img_processed = np.copy(self.img_residual)
+        img_processed = img_processed * self.residual_detail_boost
         
         num_colors = self.img_scales.shape[3]
 
@@ -185,7 +191,8 @@ class MultiScaleImage:
                 img_downsampled = sk.transform.rescale(img_filtered_array[0,:,:], scale=1/(2**(selected_scale-downsample_threshold_scale)))
                 logging.info("Downscale image before median calculation of level {} for color channel {} to size {}".format(selected_scale, color_channel, img_downsampled.shape))
                 img_filtered = sp.ndimage.median_filter(img_downsampled, footprint=median_filter_masks[downsample_threshold_scale])
-                img_filtered_array[selected_scale+1,:,:] = sk.transform.resize_local_mean(img_filtered, orig_shape)
+                #img_filtered_array[selected_scale+1,:,:] = sk.transform.resize_local_mean(img_filtered, orig_shape)
+                img_filtered_array[selected_scale+1,:,:] = np.transpose(cv2.resize(np.transpose(img_filtered), orig_shape, interpolation = cv2.INTER_LANCZOS4))
 
 
         except:

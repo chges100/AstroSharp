@@ -128,7 +128,7 @@ class Application(tk.Frame):
         self.canvas.pack(side=tk.RIGHT, expand=True, fill=tk.BOTH)
         
         
-        self.display_options = ["Original","Processed","Scale"]
+        self.display_options = ["Original","Processed","Scale", "Residual"]
         self.display_type = tk.StringVar()
         self.display_type.set(self.display_options[0])
         self.display_menu = ttk.OptionMenu(self.canvas, self.display_type, self.display_type.get(), *self.display_options, command=self.switch_display)
@@ -193,7 +193,7 @@ class Application(tk.Frame):
         self.sharp_menu.grid(column=0, row=1, pady=(20*scal,5*scal), padx=15*scal, sticky="news")
         self.sharp_menu.sub_frame.grid_columnconfigure(0, weight=1)
         
-        for i in range(21):
+        for i in range(22):
             self.sharp_menu.sub_frame.grid_rowconfigure(i, weight=1)
         
         #---Open Image---
@@ -924,11 +924,52 @@ class Application(tk.Frame):
         self.scale7_show_button.grid(column=0, row=6, pady=(5*scal,30*scal), padx=15*scal, sticky="news")
         tt_show_scale7 = tooltip.Tooltip(self.scale7_show_button, text=tooltip.show_scale_text)
 
+        #---Residual menu---
+
+        self.residual_menu = CollapsibleFrame(self.sharp_menu.sub_frame, text=_("Residual") + " ", nested=True)
+        self.residual_menu.grid(column=0, row=16, pady=(5*scal,20*scal), padx=15*scal, sticky="news")
+        self.residual_menu.sub_frame.grid_columnconfigure(0, weight=1)
+
+        for i in range(3):
+            self.residual_menu.sub_frame.grid_rowconfigure(i, weight=1)
+
+        self.residual_detail = tk.DoubleVar()
+        self.residual_detail.set(1.0)
+        if "residual_detail" in self.prefs:
+            self.residual_detail.set(self.prefs["residual_detail"])
+
+        self.residual_detail_text = tk.Message(self.residual_menu.sub_frame, text=_("Detail Enhancement") + ": {:.1f}".format(self.scale7_detail.get()))
+        self.residual_detail_text.config(width=500 * scal)
+        self.residual_detail_text.grid(column=0, row=0, pady=(5*scal,5*scal), padx=15*scal, sticky="ews")
+        
+        def on_residual_detail_slider(scale_detail):
+            self.residual_detail.set(scale_detail)
+            self.residual_detail_text.configure(text=_("Detail Enhancement") + ": {:.1f}".format(self.scale7_detail.get()))
+                
+
+        self.residual_detail_slider = ttk.Scale(
+            self.residual_menu.sub_frame,
+            orient=tk.HORIZONTAL,
+            from_=1.0,
+            to=4.0,
+            var=self.scale7_detail,
+            command=on_residual_detail_slider,
+            length=110
+            )
+        
+        self.residual_detail_slider.grid(column=0, row=1, pady=(0,30*scal), padx=15*scal, sticky="ew")
+
+        self.residual_show_button = ttk.Button(self.residual_menu.sub_frame, 
+                         text=_("Show Residual"),
+                         command=self.show_residual)
+        self.residual_show_button.grid(column=0, row=2, pady=(5*scal,30*scal), padx=15*scal, sticky="news")
+        tt_show_residual = tooltip.Tooltip(self.residual_show_button, text=tooltip.show_scale_text)
+
         #---Load default values---
         self.default_val_button = ttk.Button(self.sharp_menu.sub_frame, 
                          text=_("Set default values"),
                          command=self.set_default_values)
-        self.default_val_button.grid(column=0, row=16, pady=(5*scal,30*scal), padx=15*scal, sticky="news")
+        self.default_val_button.grid(column=0, row=17, pady=(5*scal,30*scal), padx=15*scal, sticky="news")
         tt_calculate= tooltip.Tooltip(self.default_val_button, text=tooltip.load_default_val_text)
         
         
@@ -936,20 +977,20 @@ class Application(tk.Frame):
         num_pic = ImageTk.PhotoImage(file=resource_path("img/gfx_number_4-scaled.png"))
         text = tk.Label(self.sharp_menu.sub_frame, text=_(" Process Image"), image=num_pic, font=heading_font, compound="left")
         text.image = num_pic
-        text.grid(column=0, row=17, pady=5*scal, padx=0, sticky="w")
+        text.grid(column=0, row=18, pady=5*scal, padx=0, sticky="w")
         
         
         self.calculate_button = ttk.Button(self.sharp_menu.sub_frame, 
                          text=_("Process Image"),
                          command=self.calculate)
-        self.calculate_button.grid(column=0, row=18, pady=(5*scal,30*scal), padx=15*scal, sticky="news")
+        self.calculate_button.grid(column=0, row=19, pady=(5*scal,30*scal), padx=15*scal, sticky="news")
         tt_calculate= tooltip.Tooltip(self.calculate_button, text=tooltip.calculate_text)
         
         #---Saving---  
         num_pic = ImageTk.PhotoImage(file=resource_path("img/gfx_number_5-scaled.png"))
         self.saveas_text = tk.Label(self.sharp_menu.sub_frame, text=_(" Saving"), image=num_pic, font=heading_font, compound="left")
         self.saveas_text.image = num_pic
-        self.saveas_text.grid(column=0, row=19, pady=5*scal, padx=0, sticky="w")
+        self.saveas_text.grid(column=0, row=20, pady=5*scal, padx=0, sticky="w")
         
         self.saveas_options = ["16 bit Tiff", "32 bit Tiff", "16 bit Fits", "32 bit Fits", "16 bit XISF", "32 bit XISF"]
         self.saveas_type = tk.StringVar()
@@ -957,14 +998,14 @@ class Application(tk.Frame):
         if "saveas_option" in self.prefs:
             self.saveas_type.set(self.prefs["saveas_option"])
         self.saveas_menu = ttk.OptionMenu(self.sharp_menu.sub_frame, self.saveas_type, self.saveas_type.get(), *self.saveas_options)
-        self.saveas_menu.grid(column=0, row=20, pady=(5*scal,20*scal), padx=15*scal, sticky="news")
+        self.saveas_menu.grid(column=0, row=21, pady=(5*scal,20*scal), padx=15*scal, sticky="news")
         tt_interpol_type= tooltip.Tooltip(self.saveas_menu, text=tooltip.saveas_text)
               
         
         self.save_button = ttk.Button(self.sharp_menu.sub_frame, 
                          text=_("Save Processed"),
                          command=self.save_image)
-        self.save_button.grid(column=0, row=21, pady=(5*scal,10*scal), padx=15*scal, sticky="news")
+        self.save_button.grid(column=0, row=22, pady=(5*scal,10*scal), padx=15*scal, sticky="news")
         tt_save_pic= tooltip.Tooltip(self.save_button, text=tooltip.save_pic_text)
         
 
@@ -1183,6 +1224,7 @@ class Application(tk.Frame):
         
         self.loading_frame.start()
 
+        self.multiscale_img.set_residual_detail_boost(self.residual_detail.get())
         self.multiscale_img.set_detail_boost(np.array([self.scale1_detail.get(), self.scale2_detail.get(), self.scale3_detail.get(), self.scale4_detail.get(), self.scale5_detail.get(), self.scale6_detail.get(), self.scale7_detail.get()]))
         self.multiscale_img.set_denoise_amount(np.array([self.scale1_denoise_amount.get(), self.scale2_denoise_amount.get(), self.scale3_denoise_amount.get(), self.scale4_denoise_amount.get(), self.scale5_denoise_amount.get(), self.scale6_denoise_amount.get(), self.scale7_denoise_amount.get()]))
         self.multiscale_img.set_denoise_threshold(np.array([self.scale1_denoise_thr.get(), self.scale2_denoise_thr.get(), self.scale3_denoise_thr.get(), self.scale4_denoise_thr.get(), self.scale5_denoise_thr.get(), self.scale6_denoise_thr.get(), self.scale7_denoise_thr.get()]))
@@ -1247,6 +1289,22 @@ class Application(tk.Frame):
 
         return
 
+    def show_residual(self):
+        if self.multiscale_img is None:
+            messagebox.showerror("Error", _("Please extract scales first."))
+            return
+        
+        self.scale_img_to_show.set_from_array(self.multiscale_img.img_residual)
+        self.scale_img_to_show.set_boost(0.0)
+        self.scale_img_to_show.update_display()
+
+        self.images["Residual"] = self.scale_img_to_show
+        self.display_type.set("Residual")
+
+        self.redraw_image()
+
+        return
+
     
     def enter_key(self,enter):
         
@@ -1270,6 +1328,8 @@ class Application(tk.Frame):
         self.scale6_detail_text.configure(text=_("Detail Enhancement") + ": {:.1f}".format(default_prefs["scale6_detail"]))
         self.scale7_detail.set(default_prefs["scale7_detail"])
         self.scale7_detail_text.configure(text=_("Detail Enhancement") + ": {:.1f}".format(default_prefs["scale7_detail"]))
+        self.residual_detail.set(default_prefs["residual_detail"])
+        self.residual_detail_text.configure(text=_("Detail Enhancement") + ": {:.1f}".format(default_prefs["residual_detail"]))
 
         self.scale1_denoise_amount.set(default_prefs["scale1_denoise_amount"])
         self.scale1_denoise_amount_text.configure(text=_("Denoise amount") + ": {:.2f}".format(default_prefs["scale1_denoise_amount"]))
@@ -1618,6 +1678,11 @@ class Application(tk.Frame):
             self.display_type.set("Original")
             messagebox.showerror("Error", _("Please extract scales first"))         
             return
+
+        if(self.images["Residual"] is None and self.display_type.get() == "Residual"):
+            self.display_type.set("Original")
+            messagebox.showerror("Error", _("Please extract scales first"))         
+            return
         
         self.loading_frame.start()
         self.redraw_image()
@@ -1649,6 +1714,7 @@ class Application(tk.Frame):
         self.prefs["scale7_detail"] = self.scale7_detail.get()
         self.prefs["scale7_denoise_amount"] = self.scale7_denoise_amount.get()
         self.prefs["scale7_denoise_thr"] = self.scale7_denoise_thr.get()
+        self.prefs["residual_detail"] = self.residual_detail.get()
         #self.prefs["lang"] = self.lang.get()
         prefs_filename = os.path.join(user_config_dir(appname="AstroSharp"), "preferences.json")
         save_preferences(prefs_filename, self.prefs)
