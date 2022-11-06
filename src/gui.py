@@ -69,13 +69,15 @@ class Application(tk.Frame):
         self.images_full = {
             "Original": None,
             "Processed": None,
-            "Scale": None
+            "Scale": None,
+            "Residual": None
         }
 
         self.images_preview = {
             "Original": None,
             "Processed": None,
-            "Scale": None
+            "Scale": None,
+            "Residual": None
         }
         
         self.images = self.images_full
