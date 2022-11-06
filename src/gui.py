@@ -1013,10 +1013,7 @@ class Application(tk.Frame):
         i = 0
         for idx, img in enumerate(self.images.values()):
             if(img is not None):
-                if img.is_scale_preview is True:
-                    img.update_display_from_array(stretches[i] + 0.5)
-                else:
-                    img.update_display_from_array(stretches[i])
+                img.update_display_from_array(stretches[i])
                 i = i+1
         self.loading_frame.end()
         
@@ -1143,7 +1140,7 @@ class Application(tk.Frame):
             return
         
         self.scale_img_to_show.set_from_array(self.multiscale_img.img_scales[num-1,:,:,:])
-        self.scale_img_to_show.is_scale_preview = True
+        self.scale_img_to_show.set_boost(0.5)
         self.scale_img_to_show.update_display()
 
         self.images["Scale"] = self.scale_img_to_show

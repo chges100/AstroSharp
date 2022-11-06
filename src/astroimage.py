@@ -22,7 +22,7 @@ class AstroImage:
         self.width = 0
         self.height = 0
         self.roworder = "BOTTOM-UP"
-        self.is_scale_preview = False
+        self.boost = 0.0
         
     def set_from_file(self, directory):
         self.img_format = os.path.splitext(directory)[1].lower()
@@ -75,13 +75,9 @@ class AstroImage:
     def update_display(self):
         img_display = self.stretch()
 
-        if self.is_scale_preview == True:
-            img_display = img_display + 0.5
+        img_display = img_display + self.boost
 
         img_display = img_display*255
-        
-        #if self.roworder == "TOP-DOWN":
-        #    img_display = np.flip(img_display, axis=0)
         
         if(img_display.shape[2] == 1):
             self.img_display = Image.fromarray(img_display[:,:,0].astype(np.uint8))
@@ -93,10 +89,8 @@ class AstroImage:
         return
     
     def update_display_from_array(self, img_display):
+        img_display = img_display + self.boost
         img_display = img_display*255
-        
-        #if self.roworder == "TOP-DOWN":
-        #    img_display = np.flip(img_display, axis=0)
         
         if(img_display.shape[2] == 1):
             self.img_display = Image.fromarray(img_display[:,:,0].astype(np.uint8))
@@ -220,3 +214,6 @@ class AstroImage:
             self.img_display_saturated = self.img_display_saturated.enhance(self.saturation.get())
             
         return
+    
+    def set_boost(self, boost):
+        self.boost = boost
