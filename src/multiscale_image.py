@@ -139,10 +139,15 @@ class MultiScaleImage:
         
         num_colors = self.img_scales.shape[3]
 
+        variances = []
+
+        for i in range(self.num_scales):
+            variances.append(np.var(self.img_scales[i,:,:,:]))
+
         for i in range(self.num_scales):
             for color_channel in range(num_colors):
                 logging.info("Add layer {} with detail factor {}".format(i, self.detail_boost[i]))
-                img_processed[:,:,color_channel] = img_processed[:,:,color_channel] + self.detail_boost[i] * np.multiply(np.ones(self.img_scales[i,:,:,color_channel].shape) - (np.absolute(self.img_scales[i,:,:,color_channel]) < self.denoise_threshold[i]) * self.denoise_amount[i], self.img_scales[i,:,:,color_channel])
+                img_processed[:,:,color_channel] = img_processed[:,:,color_channel] + self.detail_boost[i] * np.multiply(np.ones(self.img_scales[i,:,:,color_channel].shape) - (np.absolute(self.img_scales[i,:,:,color_channel]) < (self.denoise_threshold[i])) * self.denoise_amount[i], self.img_scales[i,:,:,color_channel])
                 #img_processed[:,:,color_channel] = img_processed[:,:,color_channel] +  self.img_scales[i,:,:,color_channel]
         return img_processed
 

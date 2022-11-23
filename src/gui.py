@@ -1677,13 +1677,11 @@ class Application(tk.Frame):
             return
 
         if(self.images["Scale"] is None and self.display_type.get() == "Scale"):
-            self.display_type.set("Original")
-            messagebox.showerror("Error", _("Please extract scales first"))         
+            self.show_scale1()     
             return
 
         if(self.images["Residual"] is None and self.display_type.get() == "Residual"):
-            self.display_type.set("Original")
-            messagebox.showerror("Error", _("Please extract scales first"))         
+            self.show_residual()     
             return
         
         self.loading_frame.start()
